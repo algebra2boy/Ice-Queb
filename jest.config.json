@@ -1,0 +1,17 @@
+{
+    "collectCoverageFrom": ["<rootDir>/src/api/**/*.ts"],
+    "testMatch": ["<rootDir>/src/tests/**/*.test.ts"],
+    "testPathIgnorePatterns": ["<rootDir>/dist/", "<rootDir>/node_modules/", "<rootDir>/logs/"],
+    "preset": "ts-jest/presets/default-esm",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+        "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+        "^.+\\.ts$": [
+            "ts-jest", {
+                "useESM": true
+            }
+        ]
+    }
+}

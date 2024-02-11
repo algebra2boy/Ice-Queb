@@ -1,0 +1,38 @@
+{
+  "name": "ice-queb",
+  "version": "1.0.0",
+  "description": "The backend of Ice Queb",
+  "main": "server/api/server.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/api/server.ts",
+    "dev": "nodemon src/api/server.ts",
+    "format": "prettier --write src/ --config .prettierrc",
+    "lint": "eslint src/ --config .eslintrc.json",
+    "test": "jest src/tests"
+  },
+  "author": "Chem Web App",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "eslint": "^8.56.0",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "jest": "^29.7.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.5",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
