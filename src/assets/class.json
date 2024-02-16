@@ -1,15 +1,15 @@
 [
-    {
-        "email": "george@umass.edu",
-        "classes": [
-            {
-                "className": "CS520",
-                "sessionNumber": "1"
-            },
-            {
-                "className": "CS240",
-                "sessionNumber": "2"
-            }
-        ]
-    }
+  {
+    "email": "george@umass.edu",
+    "classes": [
+      {
+        "className": "CS520",
+        "sessionNumber": "1"
+      },
+      {
+        "className": "CS240",
+        "sessionNumber": "2"
+      }
+    ]
+  }
 ]
