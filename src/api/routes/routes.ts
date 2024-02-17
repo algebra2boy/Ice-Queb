@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import AuthRouter from '../auth/auth.routes.js';
-import ClassRouter from '../class/class.routes.js';
-import QueueRouter from "../queue/queue.routes.js";
+import AuthRouter from '../services/auth/auth.routes.js';
+import ClassRouter from '../services/class/class.routes.js';
+import QueueRouter from "../services/queue/queue.routes.js";
 
 const router = Router();
 
