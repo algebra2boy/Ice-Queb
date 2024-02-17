@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import queueController from './queue.controller.js';
+import * as queueController from './queue.controller.js';
 
 const router = Router();
 
