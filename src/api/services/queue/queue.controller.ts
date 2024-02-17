@@ -1,9 +1,8 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 const getQueueInfo = (req: Request, res: Response) => {
     res.json(2);
 };
-
 
 const joinQueue = (req: Request, res: Response) => {
     res.json(3);
@@ -16,5 +15,5 @@ const leaveQueue = (req: Request, res: Response) => {
 export default {
     getQueueInfo,
     joinQueue,
-    leaveQueue
-}
+    leaveQueue,
+};
