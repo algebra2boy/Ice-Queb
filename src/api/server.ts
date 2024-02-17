@@ -3,7 +3,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import 'dotenv/config';
-import routes from './services/routes.js';
+import routes from './services/routes/routes.js';
 
 const app = express();
 
