@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import status from 'http-status';
 
-import { HttpError } from "../utils/httpError.util.js";
+import { HttpError } from '../utils/httpError.util.js';
 
 /**
  * This middleware will intercept all the possible errors from the server.

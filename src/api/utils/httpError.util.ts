@@ -1,4 +1,4 @@
-type ErrorMessage = { "message": string, "status": "failure" }
+type ErrorMessage = { message: string; status: 'failure' };
 
 export class HttpError extends Error {
     errorCode: number;
