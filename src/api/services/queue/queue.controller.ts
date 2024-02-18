@@ -27,7 +27,7 @@ const updateQueues = async (newQueues: Queue[]) => {
 };
 
 // Router functions
-const getQueueInfo = async (req: Request, res: Response) => {
+export const getQueueInfo = async (req: Request, res: Response) => {
     const { className, sessionNumber, day, startTime } = req.query;
 
     // will be replaced by actual database
@@ -49,7 +49,7 @@ const getQueueInfo = async (req: Request, res: Response) => {
     }
 };
 
-const joinQueue = async (req: Request, res: Response) => {
+export const joinQueue = async (req: Request, res: Response) => {
     const { studentEmail, className, sessionNumber, day, startTime } = req.query;
 
     // will be replaced by actual database
@@ -76,7 +76,7 @@ const joinQueue = async (req: Request, res: Response) => {
     }
 };
 
-const leaveQueue = async (req: Request, res: Response) => {
+export const leaveQueue = async (req: Request, res: Response) => {
     const { studentEmail, className, sessionNumber, day, startTime } = req.query;
 
     // will be replaced by actual database
@@ -101,7 +101,7 @@ const leaveQueue = async (req: Request, res: Response) => {
             } else {
                 return false;
             }
-        })
+        });
 
         targetQueue.studentList.splice(targetIdx, 1);
 
@@ -112,10 +112,4 @@ const leaveQueue = async (req: Request, res: Response) => {
     } else {
         res.json({ err: 'No such queue is found' });
     }
-};
-
-export default {
-    getQueueInfo,
-    joinQueue,
-    leaveQueue,
 };
