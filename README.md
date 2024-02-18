@@ -7,7 +7,7 @@ npm run build
 # Run server using `ts-node`
 npm run start
 
-# Run server in development mRode
+# Run server in development mode
 npm run dev
 
 # Format code using `prettier`
