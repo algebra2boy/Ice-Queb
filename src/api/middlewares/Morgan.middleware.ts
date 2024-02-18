@@ -1,5 +1,5 @@
 import morgan from 'morgan';
-import logger from '../configs/winstonLogger.js';
+import logger from '../configs/winstonLogger.config.js';
 
 const format = ':method :url :status :response-time ms HTTP/:http-version [:date]';
 
