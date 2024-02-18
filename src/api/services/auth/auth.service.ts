@@ -14,7 +14,7 @@ async function login(payload: User): Promise<RegisterUser> {
 
     if (!user) {
         throw new HttpError(status.NOT_FOUND, {
-            message: 'user does not exist in the database',
+            message: `user with ${payload.email} does not exist in the database`,
             status: 'failure',
         });
     }
@@ -23,7 +23,7 @@ async function login(payload: User): Promise<RegisterUser> {
 
     if (!isPasswordCorrect) {
         throw new HttpError(status.UNAUTHORIZED, {
-            message: 'user password is not correct',
+            message: `user password is not correct for ${payload.email}`,
             status: 'failure',
         });
     }
@@ -42,7 +42,7 @@ async function signup(payload: User): Promise<RegisterUser> {
 
     if (existingUser) {
         throw new HttpError(status.FORBIDDEN, {
-            message: 'user already exists in the database',
+            message: `user with ${payload.email} already exists in the database`,
             status: 'failure',
         });
     }
