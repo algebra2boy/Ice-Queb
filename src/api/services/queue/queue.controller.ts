@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { Queue, StudentInQueue } from './queue.model.js';
+import status from 'http-status';
+import { HttpError } from '../../utils/httpError.util.js';
 
 // For testing, will be replaced by actual database
 import fs from 'fs/promises';
@@ -26,12 +28,10 @@ const updateQueues = async (newQueues: Queue[]) => {
     }
 };
 
-interface RequestBodyLoad {
-    [key: string]: string | Date | undefined;
-}
 
-const findTargetQueue = (body: RequestBodyLoad, queue: Queue) => {
-    const { className, sessionNumber, day, startTime } = body;
+
+const findTargetQueue = (payload: Queue, queue: Queue) => {
+    const { className, sessionNumber, day, startTime } = payload;
     return (
         queue.className === className &&
         queue.sessionNumber === sessionNumber &&
@@ -58,7 +58,10 @@ export const getQueueInfo = async (req: Request, res: Response) => {
     if (targetQueue) {
         res.json(targetQueue);
     } else {
-        res.json({ message: 'Error: No such queue is found', status: 'failure' });
+        throw new HttpError(status.NOT_FOUND, {
+            message: 'no such queue is found',
+            status: 'failure',
+        });
     }
 };
 
@@ -80,7 +83,10 @@ export const joinQueue = async (req: Request, res: Response) => {
 
         res.json({ status: 'Success' });
     } else {
-        res.json({ message: 'Error: No such queue is found', status: 'failure' });
+        throw new HttpError(status.NOT_FOUND, {
+            message: 'no such queue is found',
+            status: 'failure',
+        });
     }
 };
 
@@ -113,6 +119,9 @@ export const leaveQueue = async (req: Request, res: Response) => {
 
         res.json({ status: 'Success' });
     } else {
-        res.json({ message: 'Error: No such queue is found', status: 'failure' });
+        throw new HttpError(status.NOT_FOUND, {
+            message: 'no such queue is found',
+            status: 'failure',
+        });
     }
 };
