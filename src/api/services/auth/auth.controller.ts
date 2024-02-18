@@ -1,9 +1,22 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import status from 'http-status';
 
-export const login = (req: Request, res: Response) => {
-    res.json({ message: 'login' });
+import * as userService from './auth.service.js';
+
+export const login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await userService.login(req.body);
+        res.status(status.OK).json(user);
+    } catch (error) {
+        next(error);
+    }
 };
 
-export const signup = (req: Request, res: Response) => {
-    res.json({ message: 'signup' });
+export const signup = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await userService.signup(req.body);
+        res.status(status.OK).json(user);
+    } catch (error) {
+        next(error);
+    }
 };
