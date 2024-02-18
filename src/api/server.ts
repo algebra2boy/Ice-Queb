@@ -10,7 +10,6 @@ import { setupSocketServer } from './services/queue/socketServer.js';
 const app = express();
 const server = http.createServer(app);
 const io = setupSocketServer(server);
-io;
 
 /**
  * Dependencies configurations

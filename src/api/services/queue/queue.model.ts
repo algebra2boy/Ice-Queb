@@ -4,3 +4,8 @@ export interface Queue {
   day: string,
   startTime: string
 }
+
+export interface StudentInQueue {
+  email: string,
+  joinTime: Date
+}
