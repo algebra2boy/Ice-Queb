@@ -1,0 +1,18 @@
+[
+  {
+    "className": "CS520",
+    "sessionNumber": "1",
+    "officeHourSection": [
+      {
+        "day": "Tuesday",
+        "startTime": "10:00",
+        "endTime": "11:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "12:00",
+        "endTime": "13:00"
+      }
+    ]
+  }
+]

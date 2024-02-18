@@ -12,7 +12,7 @@
     "lint": "eslint src/ --config .eslintrc.json",
     "test": "jest src/tests"
   },
-  "author": "Chem Web App",
+  "author": "ice-queb backend team",
   "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.17",
