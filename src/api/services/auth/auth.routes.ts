@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import * as authController from './auth.controller.js';
 import validate from '../../middlewares/Zod.middleware.js';
-import { loginSchema, signupSchema } from '../../validation/auth.validation.js';
+import { loginSchema, signupSchema } from '../../validations/auth.validation.js';
 
 const router = Router();
 
