@@ -1,18 +1,1 @@
-[
-  {
-    "className": "CS520",
-    "sessionNumber": "1",
-    "day": "Tuesday",
-    "startTime": "10:00",
-    "studentList": [
-      {
-        "email": "george@umass.edu",
-        "joinTime": "02-15-2024 10:00:59"
-      }, 
-      {
-        "email": "yongyetan@umass.edu",
-        "joinTime": "02-15-2024 11:20:50"
-      }
-    ]
-  }
-]
+[{"className":"CS520","sessionNumber":"1","day":"Tuesday","startTime":"10:00","studentList":[{"email":"george@umass.edu","joinTime":"02-15-2024 10:00:59"},{"email":"yongyetan@umass.edu","joinTime":"02-15-2024 11:20:50"}]}]
