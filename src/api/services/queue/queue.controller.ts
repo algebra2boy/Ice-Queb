@@ -17,7 +17,7 @@ const loadQueues = async () => {
     }
 };
 
-const getQueueInfo = async (req: Request, res: Response) => {
+export const getQueueInfo = async (req: Request, res: Response) => {
     const { className, sessionNumber, day, startTime } = req.query;
 
     const queues = await loadQueues();
@@ -38,16 +38,12 @@ const getQueueInfo = async (req: Request, res: Response) => {
     }
 };
 
-const joinQueue = (req: Request, res: Response) => {
+export const joinQueue = (req: Request, res: Response) => {
     res.json(3);
 };
 
-const leaveQueue = (req: Request, res: Response) => {
+export const leaveQueue = (req: Request, res: Response) => {
     res.json(4);
 };
 
-export default {
-    getQueueInfo,
-    joinQueue,
-    leaveQueue,
-};
+
