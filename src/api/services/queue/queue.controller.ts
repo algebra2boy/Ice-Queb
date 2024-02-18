@@ -28,8 +28,6 @@ const updateQueues = async (newQueues: Queue[]) => {
     }
 };
 
-
-
 const findTargetQueue = (payload: Queue, queue: Queue) => {
     const { className, sessionNumber, day, startTime } = payload;
     return (
