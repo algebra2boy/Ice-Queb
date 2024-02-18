@@ -26,21 +26,34 @@ const updateQueues = async (newQueues: Queue[]) => {
     }
 };
 
+interface RequestBodyLoad {
+    [key: string]: string | Date | undefined;
+}
+
+const findTargetQueue = (body: RequestBodyLoad, queue: Queue) => {
+    const { className, sessionNumber, day, startTime } = body;
+    return (
+        queue.className === className &&
+        queue.sessionNumber === sessionNumber &&
+        queue.day === day &&
+        queue.startTime === startTime
+    );
+};
+
 // Router functions
 export const getQueueInfo = async (req: Request, res: Response) => {
-    const { className, sessionNumber, day, startTime } = req.query;
+    // const { className, sessionNumber, day, startTime } = req.body;
 
     // will be replaced by actual database
     const queues = await loadQueues();
 
+    // const targetQueue = findTargetQueue(req.body, queue);
+
     const targetQueue = queues.find((queue: Queue) => {
-        return (
-            queue.className === className &&
-            queue.sessionNumber === sessionNumber &&
-            queue.day === day &&
-            queue.startTime === startTime
-        );
+        return findTargetQueue(req.body, queue);
     });
+
+    console.log(targetQueue);
 
     if (targetQueue) {
         res.json(targetQueue);
@@ -50,18 +63,13 @@ export const getQueueInfo = async (req: Request, res: Response) => {
 };
 
 export const joinQueue = async (req: Request, res: Response) => {
-    const { studentEmail, className, sessionNumber, day, startTime } = req.query;
+    const { studentEmail } = req.body;
 
     // will be replaced by actual database
     const queues = await loadQueues();
 
     const targetQueue = queues.find((queue: Queue) => {
-        return (
-            queue.className === className &&
-            queue.sessionNumber === sessionNumber &&
-            queue.day === day &&
-            queue.startTime === startTime
-        );
+        return findTargetQueue(req.body, queue);
     });
 
     if (targetQueue) {
@@ -77,18 +85,13 @@ export const joinQueue = async (req: Request, res: Response) => {
 };
 
 export const leaveQueue = async (req: Request, res: Response) => {
-    const { studentEmail, className, sessionNumber, day, startTime } = req.query;
+    const { studentEmail } = req.body;
 
     // will be replaced by actual database
     const queues = await loadQueues();
 
     const targetQueue = queues.find((queue: Queue) => {
-        return (
-            queue.className === className &&
-            queue.sessionNumber === sessionNumber &&
-            queue.day === day &&
-            queue.startTime === startTime
-        );
+        return findTargetQueue(req.body, queue);
     });
 
     if (targetQueue) {
