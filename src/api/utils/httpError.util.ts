@@ -2,7 +2,7 @@ type ErrorMessage = { message: string; status: 'failure' };
 
 /**
  * This HttpError class standardizes our response when there is an error on the client or server side.
- *  @example 
+ *  @example
  * ```ts
  * import { HttpError } from '../../utils/httpError.util.js';
  * if (condition) {
