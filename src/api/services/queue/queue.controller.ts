@@ -58,7 +58,7 @@ export const getQueueInfo = async (req: Request, res: Response) => {
     if (targetQueue) {
         res.json(targetQueue);
     } else {
-        res.json({ err: 'No such queue is found' });
+        res.json({ message: 'Error: No such queue is found', status: 'failure' });
     }
 };
 
@@ -78,9 +78,9 @@ export const joinQueue = async (req: Request, res: Response) => {
         // will be replaced by actual database
         await updateQueues(queues);
 
-        res.json({ success: 'Student joins the queue' });
+        res.json({ status: 'Success' });
     } else {
-        res.json({ err: 'No such queue is found' });
+        res.json({ message: 'Error: No such queue is found', status: 'failure' });
     }
 };
 
@@ -111,8 +111,8 @@ export const leaveQueue = async (req: Request, res: Response) => {
         // will be replaced by actual database
         await updateQueues(queues);
 
-        res.json({ success: 'Student leaves the queue' });
+        res.json({ status: 'Success' });
     } else {
-        res.json({ err: 'No such queue is found' });
+        res.json({ message: 'Error: No such queue is found', status: 'failure' });
     }
 };
