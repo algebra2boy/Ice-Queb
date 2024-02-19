@@ -22,12 +22,6 @@ export class MongoDB {
     private static iceQuebDB: Db;
 
     /**
-     * The MongoDB's constructor should be hidden to prevent direct
-     * construction from the client's perspective
-     */
-    // private constructor() { }
-
-    /**
    The static method sets the connection to MongoDB using the environment database url.
    Connection pooling is used for multi-threading enviornment, allowing multiple 
    threads to use separate connections concurrently
