@@ -10,7 +10,10 @@ import { HttpError } from '../utils/httpError.util.js';
  */
 const ErrorMiddleware = (error: Error, req: Request, res: Response, next: NextFunction) => {
     if (error && error instanceof HttpError) {
-        res.status(error.errorCode).json(error.error);
+        res.status(error.errorCode).json({
+            message: error.errorMessage,
+            status: 'failure'
+        });
     } else if (error) {
         res.status(status.INTERNAL_SERVER_ERROR).json({
             message: error.message,

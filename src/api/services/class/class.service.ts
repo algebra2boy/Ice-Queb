@@ -11,10 +11,7 @@ async function getAllClassByStudentEmail(email: string) {
     const classes = getClassbyEmail(classCollection, email);
 
     if (!classes) {
-        throw new HttpError(status.NOT_FOUND, {
-            message: `classes are not found for ${email}`,
-            status: 'failure',
-        });
+        throw new HttpError(status.NOT_FOUND, `classes are not found for ${email}`);
     }
 
     return classes;
@@ -31,10 +28,7 @@ async function getClassbyEmail(
     const document = await classCollection.findOne({ email: email });
 
     if (!document) {
-        throw new HttpError(status.NOT_FOUND, {
-            message: `no account-class document is found for ${email}`,
-            status: 'failure',
-        });
+        throw new HttpError(status.NOT_FOUND, `no account-class document is found for ${email}`);
     }
 
     return document.classes;

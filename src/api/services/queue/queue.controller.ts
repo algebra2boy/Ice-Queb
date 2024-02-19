@@ -56,10 +56,7 @@ export const getQueueInfo = async (req: Request, res: Response) => {
     if (targetQueue) {
         res.json(targetQueue);
     } else {
-        throw new HttpError(status.NOT_FOUND, {
-            message: 'no such queue is found',
-            status: 'failure',
-        });
+        throw new HttpError(status.NOT_FOUND, 'no such queue is found');
     }
 };
 
@@ -81,10 +78,7 @@ export const joinQueue = async (req: Request, res: Response) => {
 
         res.json({ status: 'Success' });
     } else {
-        throw new HttpError(status.NOT_FOUND, {
-            message: 'no such queue is found',
-            status: 'failure',
-        });
+        throw new HttpError(status.NOT_FOUND, 'no such queue is found');
     }
 };
 
@@ -117,9 +111,6 @@ export const leaveQueue = async (req: Request, res: Response) => {
 
         res.json({ status: 'Success' });
     } else {
-        throw new HttpError(status.NOT_FOUND, {
-            message: 'no such queue is found',
-            status: 'failure',
-        });
+        throw new HttpError(status.NOT_FOUND, 'no such queue is found');
     }
 };
