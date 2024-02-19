@@ -1,5 +1,11 @@
-describe('how to do a unit test', () => {
-    it('test 1 + 1', () => {
-        expect(1 + 1).toEqual(2);
+import app from '../api/app.js';
+import request from 'supertest';
+
+describe('simple route', () => {
+    test('GET /', async () => {
+        const response = await request(app).get('/').timeout(4000);
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ message: 'Hello, world!' });
     });
 });

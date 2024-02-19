@@ -29,7 +29,15 @@ async function getClassbyEmail(
     email: string,
 ): Promise<[Class] | undefined> {
     const document = await classCollection.findOne({ email: email });
-    return document?.classes;
+
+    if (!document) {
+        throw new HttpError(status.NOT_FOUND, {
+            message: `no account-class document is found for ${email}`,
+            status: 'failure',
+        });
+    }
+
+    return document.classes;
 }
 
 export { getAllClassByStudentEmail };

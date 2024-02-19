@@ -1,4 +1,5 @@
 import { MongoClient, ServerApiVersion, Db } from 'mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 /**
  * The **MongoDB** class is a custom class that allows us for making Connections to MongoDB.
@@ -8,7 +9,7 @@ import { MongoClient, ServerApiVersion, Db } from 'mongodb';
  * import { Db, Collection } from 'mongodb';
  *
  * // Start running the server, only used once in the entire app
- * await MongoDB.runServer()
+ * MongoDB.runServer()
  *
  * // How to retrieve the Database
  * const database: Db = MongoDB.getIceQuebDB()
@@ -18,23 +19,32 @@ import { MongoClient, ServerApiVersion, Db } from 'mongodb';
  * ```
  */
 export class MongoDB {
+    // establish the client connection to the mongo db
     private static client: MongoClient;
+
+    // the database instance of the mongodb
     private static iceQuebDB: Db;
 
-    /**
-     * The MongoDB's constructor should be hidden to prevent direct
-     * construction from the client's perspective
-     */
-    // private constructor() { }
+    // this is a mock database instance that creates a copy of
+    // production instance that will be discarded once all tests are executed
+    private static mockDB: MongoMemoryServer | null = null;
 
     /**
    The static method sets the connection to MongoDB using the environment database url.
    Connection pooling is used for multi-threading enviornment, allowing multiple 
    threads to use separate connections concurrently
    */
-    private static setClient() {
+    private static async setClient() {
         if (!process.env.MONGODB_URL) throw new Error('MongoDB URL not found in the .env file');
-        MongoDB.client = new MongoClient(process.env.MONGODB_URL, {
+
+        let dbUrl = process.env.MONGODB_URL;
+
+        if (process.env.NODE_ENV === 'test') {
+            MongoDB.mockDB = await MongoMemoryServer.create();
+            dbUrl = MongoDB.mockDB.getUri();
+        }
+
+        MongoDB.client = new MongoClient(dbUrl, {
             serverApi: {
                 version: ServerApiVersion.v1,
                 strict: true,
@@ -62,17 +72,32 @@ export class MongoDB {
      */
     public static async runServer() {
         try {
-            MongoDB.setClient();
+            await MongoDB.setClient();
 
             const client = await MongoDB.client.connect();
 
             await client.db('iceQueb').command({ ping: 1 });
 
-            console.log('Pinged your deployment. You successfully connected to MongoDB!');
+            if (process.env.NODE_ENV !== 'test') {
+                console.log('Pinged your deployment. You successfully connected to MongoDB!');
+            }
 
             MongoDB.iceQuebDB = MongoDB.client.db('iceQueb');
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    /**
+     * Closes the MongoDB client connection.
+     */
+    public static async closeConnection() {
+        if (MongoDB.client) {
+            await MongoDB.client.close();
+        }
+
+        if (MongoDB.mockDB) {
+            await MongoDB.mockDB.stop();
         }
     }
 }
