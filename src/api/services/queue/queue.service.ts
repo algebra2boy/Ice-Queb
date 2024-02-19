@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
-import { Queue, StudentInQueue } from './queue.model.js';
 import status from 'http-status';
+import { Queue, StudentInQueue } from './queue.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 
 // For testing, will be replaced by actual database
@@ -21,7 +20,7 @@ const loadQueues = async () => {
 };
 const updateQueues = async (newQueues: Queue[]) => {
     try {
-        const data = JSON.stringify(newQueues);
+        const data = JSON.stringify(newQueues, null, 4); // add indentation helps visualizing much better 
         await fs.writeFile(path.resolve(ASSETS_FOLDER, 'queues.json'), data, 'utf8');
     } catch (err) {
         console.log(err);
@@ -39,77 +38,69 @@ const findTargetQueue = (payload: Queue, queue: Queue) => {
 };
 
 // Router functions
-export const getQueueInfo = async (queue: Queue) => {
+export const getQueueInfo = async (userQueueInfo: Queue) => {
 
     // will be replaced by actual database
     const queues = await loadQueues();
 
-    // const targetQueue = findTargetQueue(req.body, queue);
-
     const targetQueue = queues.find((queue: Queue) => {
-        return findTargetQueue(queue, queue);
+        return findTargetQueue(userQueueInfo, queue);
     });
 
-    console.log(targetQueue);
-
-    if (targetQueue) {
-        res.json(targetQueue);
-    } else {
+    if (!targetQueue) {
         throw new HttpError(status.NOT_FOUND, 'no such queue is found');
     }
+
+    return targetQueue;
 };
 
-export const joinQueue = async (req: Request, res: Response) => {
-    const { studentEmail } = req.body;
+export const joinQueue = async (userQueueInfo: Queue, email: string) => {
 
     // will be replaced by actual database
     const queues = await loadQueues();
 
     const targetQueue = queues.find((queue: Queue) => {
-        return findTargetQueue(req.body, queue);
+        return findTargetQueue(userQueueInfo, queue);
     });
 
-    if (targetQueue) {
-        targetQueue.studentList.push({ studentEmail, joinTime: new Date() });
-
-        // will be replaced by actual database
-        await updateQueues(queues);
-
-        res.json({ status: 'Success' });
-    } else {
+    if (!targetQueue) {
         throw new HttpError(status.NOT_FOUND, 'no such queue is found');
     }
+
+    targetQueue.studentList.push({ email, joinTime: new Date() });
+
+    // will be replaced by actual database
+    await updateQueues(queues);
+
+    return {
+        message: `${email} has joined the queue`,
+        status: 'Success'
+    };
 };
 
-export const leaveQueue = async (req: Request, res: Response) => {
-    const { studentEmail } = req.body;
+export const leaveQueue = async (userQueueInfo: Queue, email: string) => {
 
     // will be replaced by actual database
     const queues = await loadQueues();
 
     const targetQueue = queues.find((queue: Queue) => {
-        return findTargetQueue(req.body, queue);
+        return findTargetQueue(userQueueInfo, queue);
     });
 
-    if (targetQueue) {
-        let targetIdx = -1;
-
-        targetQueue.studentList.forEach((student: StudentInQueue, idx: number) => {
-            if (student.email === studentEmail) {
-                targetIdx = idx;
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-        targetQueue.studentList.splice(targetIdx, 1);
-
-        // will be replaced by actual database
-        await updateQueues(queues);
-
-        res.json({ status: 'Success' });
-    } else {
+    if (!targetQueue) {
         throw new HttpError(status.NOT_FOUND, 'no such queue is found');
     }
+
+    // @ts-ignore
+    let targetIdx = targetQueue.studentList.findIndex(student => student.email === email);
+
+    targetQueue.studentList.splice(targetIdx, 1);
+
+    // will be replaced by actual database
+    await updateQueues(queues);
+
+    return {
+        message: `${email} has left the queue`,
+        status: 'Success'
+    };
 };
