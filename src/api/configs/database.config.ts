@@ -69,4 +69,13 @@ export class MongoDB {
             console.error(error);
         }
     }
+
+    /**
+     * Closes the MongoDB client connection.
+     */
+    public static async closeConnection() {
+        if (MongoDB.client) {
+            await MongoDB.client.close();
+        }
+    }
 }
