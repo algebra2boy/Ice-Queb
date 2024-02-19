@@ -20,7 +20,7 @@ const loadQueues = async () => {
 };
 const updateQueues = async (newQueues: Queue[]) => {
     try {
-        const data = JSON.stringify(newQueues, null, 4); // add indentation helps visualizing much better 
+        const data = JSON.stringify(newQueues, null, 4); // add indentation helps visualizing much better
         await fs.writeFile(path.resolve(ASSETS_FOLDER, 'queues.json'), data, 'utf8');
     } catch (err) {
         console.log(err);
@@ -39,7 +39,6 @@ const findTargetQueue = (payload: Queue, queue: Queue) => {
 
 // Router functions
 export const getQueueInfo = async (userQueueInfo: Queue) => {
-
     // will be replaced by actual database
     const queues = await loadQueues();
 
@@ -55,7 +54,6 @@ export const getQueueInfo = async (userQueueInfo: Queue) => {
 };
 
 export const joinQueue = async (userQueueInfo: Queue, email: string) => {
-
     // will be replaced by actual database
     const queues = await loadQueues();
 
@@ -74,12 +72,11 @@ export const joinQueue = async (userQueueInfo: Queue, email: string) => {
 
     return {
         message: `${email} has joined the queue`,
-        status: 'Success'
+        status: 'Success',
     };
 };
 
 export const leaveQueue = async (userQueueInfo: Queue, email: string) => {
-
     // will be replaced by actual database
     const queues = await loadQueues();
 
@@ -91,8 +88,9 @@ export const leaveQueue = async (userQueueInfo: Queue, email: string) => {
         throw new HttpError(status.NOT_FOUND, 'no such queue is found');
     }
 
-    // @ts-ignore
-    let targetIdx = targetQueue.studentList.findIndex(student => student.email === email);
+    let targetIdx = targetQueue.studentList.findIndex(
+        (student: StudentInQueue) => student.email === email,
+    );
 
     targetQueue.studentList.splice(targetIdx, 1);
 
@@ -101,6 +99,6 @@ export const leaveQueue = async (userQueueInfo: Queue, email: string) => {
 
     return {
         message: `${email} has left the queue`,
-        status: 'Success'
+        status: 'Success',
     };
 };

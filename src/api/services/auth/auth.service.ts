@@ -13,13 +13,13 @@ async function login(payload: User): Promise<RegisterUser> {
     const user = await findUserByEmail(accountCollection, payload.email);
 
     if (!user) {
-        throw new HttpError(status.NOT_FOUND, `user with ${payload.email} does not exist in the database`);
+        throw new HttpError(status.NOT_FOUND, `user with ${payload.email} does not exist`);
     }
 
     const isPasswordCorrect: boolean = await validatePassword(payload.password, user.password);
 
     if (!isPasswordCorrect) {
-        throw new HttpError(status.UNAUTHORIZED, `user password is not correct for ${payload.email}`);
+        throw new HttpError(status.UNAUTHORIZED, `password is not correct for ${payload.email}`);
     }
 
     return {
@@ -35,7 +35,7 @@ async function signup(payload: User): Promise<RegisterUser> {
     const existingUser = await findUserByEmail(accountCollection, payload.email);
 
     if (existingUser) {
-        throw new HttpError(status.FORBIDDEN, `user with ${payload.email} already exists in the database`);
+        throw new HttpError(status.FORBIDDEN, `user with ${payload.email} already exists`);
     }
 
     await createNewUser(accountCollection, payload);

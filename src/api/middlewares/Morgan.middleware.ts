@@ -7,7 +7,7 @@ const format = ':method :url :status :response-time ms HTTP/:http-version [:date
 /**
  * This custom morgan middleware will log any incoming HTTP requests to the `logs` folder in
  * the `combined.log` and `error.log` file.
- * 
+ *
  * The `combined.log` includes both informational and error logs.
  * The `error.log` includes only the error log.
  */
