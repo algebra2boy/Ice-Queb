@@ -1,4 +1,7 @@
 import { MongoClient, ServerApiVersion, Db } from 'mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+let mongod: MongoMemoryServer | null = null;
 
 /**
  * The **MongoDB** class is a custom class that allows us for making Connections to MongoDB.
@@ -26,9 +29,18 @@ export class MongoDB {
    Connection pooling is used for multi-threading enviornment, allowing multiple 
    threads to use separate connections concurrently
    */
-    private static setClient() {
+    private static async setClient() {
         if (!process.env.MONGODB_URL) throw new Error('MongoDB URL not found in the .env file');
-        MongoDB.client = new MongoClient(process.env.MONGODB_URL, {
+        
+        let dbUrl = process.env.MONGODB_URL; 
+        
+        if (process.env.NODE_ENV === 'test') {
+            mongod = await MongoMemoryServer.create();
+            dbUrl = mongod.getUri();
+            console.log(dbUrl);
+        } 
+
+        MongoDB.client = new MongoClient(dbUrl, {
             serverApi: {
                 version: ServerApiVersion.v1,
                 strict: true,
@@ -56,7 +68,7 @@ export class MongoDB {
      */
     public static async runServer() {
         try {
-            MongoDB.setClient();
+            await MongoDB.setClient();
 
             const client = await MongoDB.client.connect();
 
@@ -76,6 +88,10 @@ export class MongoDB {
     public static async closeConnection() {
         if (MongoDB.client) {
             await MongoDB.client.close();
+            
+            if (mongod) {
+                await mongod.stop();
+            }
         }
     }
 }
