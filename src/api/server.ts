@@ -26,9 +26,9 @@ app.use(cors());
 app.use(express.json());
 app.use(routes);
 app.use(errorMiddleware);
-MongoDB.runServer();
+// MongoDB.runServer();
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', async (req: Request, res: Response) => {
     res.status(200).json({ message: 'Hello, world!' });
 });
 
@@ -41,3 +41,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`the server is running on port ${PORT}`);
 });
+
+export default app;
