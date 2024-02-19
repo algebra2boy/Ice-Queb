@@ -37,7 +37,6 @@ export class MongoDB {
         if (process.env.NODE_ENV === 'test') {
             mongod = await MongoMemoryServer.create();
             dbUrl = mongod.getUri();
-            console.log(dbUrl);
         } 
 
         MongoDB.client = new MongoClient(dbUrl, {
