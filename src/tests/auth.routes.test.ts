@@ -10,7 +10,7 @@ describe('authentication service routes', () => {
     });
 
     afterAll(async () => {
-        // close MongoDB connection after all tests run
+        // close MongoDB connection and server after all tests run
         await MongoDB.closeConnection();
         server.close();
     });
@@ -20,11 +20,7 @@ describe('authentication service routes', () => {
             const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: true };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
-            console.log(response);
-
             expect(response.statusCode).toBe(201);
         });
     });
-
-    
 });
