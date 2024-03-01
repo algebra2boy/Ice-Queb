@@ -10,3 +10,20 @@ export const getClassList = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+export const publishClassList = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const failedEmails = await classService.publishAllClassByStudentEmail(
+            req.body.classSession,
+            req.body.emails,
+        );
+
+        if (failedEmails.length > 0) {
+            res.status(status.OK).json({ failedEmails: failedEmails });
+        } else {
+            res.status(status.OK).json({ status: 'success' });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
