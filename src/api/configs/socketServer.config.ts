@@ -40,69 +40,70 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
         socket.on('join queue', async (studentEmail, className, sessionNumber, day, startTime) => {
             const queues = await loadQueues();
 
-            const targetQueue = queues.find((queue: Queue) => {
-                return (
-                    queue.className === className &&
-                    queue.sessionNumber === sessionNumber &&
-                    queue.day === day &&
-                    queue.startTime === startTime
-                );
+            const targetQueue = findTargetQueue(queues, className, sessionNumber, day, startTime);
+
+            if (!targetQueue) {
+                io.to(socket.id).emit('failed joining queue', 'No such queue is found');
+                return;
+            }
+
+            const pplInQueue = targetQueue.studentList.length;
+            targetQueue.studentList.push({
+                socketId: socket.id,
+                email: studentEmail,
+                joinTime: new Date(),
+                position: pplInQueue,
             });
 
-            if (targetQueue) {
-                const pplInQueue = targetQueue.studentList.length;
-                targetQueue.studentList.push({
-                    socketId: socket.id,
-                    email: studentEmail,
-                    joinTime: new Date(),
-                    pos: pplInQueue,
-                });
+            // will be replaced by actual database
+            await updateQueues(queues);
 
-                // will be replaced by actual database
-                await updateQueues(queues);
+            io.to(socket.id).emit('joined queue', pplInQueue - 1);
 
-                io.to(socket.id).emit('joined queue', pplInQueue - 1);
-            } else {
-                io.to(socket.id).emit('failed joining queue', 'No such queue is found');
-            }
         });
 
         socket.on('leave queue', async (studentEmail, className, sessionNumber, day, startTime) => {
             const queues = await loadQueues();
 
-            const targetQueue = queues.find((queue: Queue) => {
-                return (
-                    queue.className === className &&
-                    queue.sessionNumber === sessionNumber &&
-                    queue.day === day &&
-                    queue.startTime === startTime
-                );
-            });
+            const targetQueue = findTargetQueue(queues, className, sessionNumber, day, startTime);
 
-            if (targetQueue) {
-                const studentsInQueue = targetQueue.studentList;
-                const targetIdx = studentsInQueue.findIndex(
-                    (student: StudentInQueue) => student.email === studentEmail,
-                );
+            if (!targetQueue) {
+                io.to(socket.id).emit('failed leaving queue', 'No such queue is found');
+                return;
+            }
 
-                if (targetIdx !== -1) {
-                    studentsInQueue.splice(targetIdx, 1);
-                    for (let i = 0; i < studentsInQueue.length; i++) {
-                        const currStudent = studentsInQueue[i];
-                        if (i !== currStudent.pos) {
-                            io.to(currStudent.socketId).emit("left queue", currStudent.pos - 1);
-                            currStudent.pos = i;
-                        }
+            const studentsInQueue = targetQueue.studentList;
+            const targetIdx = studentsInQueue.findIndex(
+                (student: StudentInQueue) => student.email === studentEmail,
+            );
+
+            if (targetIdx !== -1) {
+                studentsInQueue.splice(targetIdx, 1);
+                for (let i = 0; i < studentsInQueue.length; i++) {
+                    const currStudent = studentsInQueue[i];
+                    if (i !== currStudent.position) {
+                        io.to(currStudent.socketId).emit("left queue", currStudent.position - 1);
+                        currStudent.position = i;
                     }
                 }
-
-                // will be replaced by actual database
-                await updateQueues(queues);
-            } else {
-                io.to(socket.id).emit('failed leaving queue', 'No such queue is found');
             }
+
+            // will be replaced by actual database
+            await updateQueues(queues);
+
         });
     });
 
     return io;
+}
+
+function findTargetQueue(queues: Queue[], className: string, sessionNumber: string, day: string, startTime: string) {
+    return queues.find((queue: Queue) => {
+        return (
+            queue.className === className &&
+            queue.sessionNumber === sessionNumber &&
+            queue.day === day &&
+            queue.startTime === startTime
+        );
+    });
 }
