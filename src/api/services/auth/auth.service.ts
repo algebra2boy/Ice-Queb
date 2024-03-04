@@ -36,7 +36,7 @@ async function signup(payload: User): Promise<RegisterUser> {
 
     if (existingUser) {
         throw new HttpError(status.FORBIDDEN, `user with ${payload.email} already exists in the database`);
-    }
+    } 
 
     await createNewUser(accountCollection, payload);
 

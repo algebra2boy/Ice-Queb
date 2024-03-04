@@ -6,6 +6,10 @@ import { classListSchema, classPublishSchema } from '../../validations/class.val
 const router = Router();
 
 router.get('/list', validate(classListSchema), classContoller.getClassList);
+
+// TODO: fix publish class list
 router.post('/publish', validate(classPublishSchema), classContoller.publishClassList)
+
+//TODO: Add a managed class route for student
 
 export default router;

@@ -9,6 +9,7 @@ import { Queue, StudentInQueue } from '../services/queue/queue.model.js';
 const ASSETS_FOLDER = path.resolve(process.cwd(), 'src/assets');
 
 // temporary helper functions
+//TODO: TEST SOCKET SERVER 
 const loadQueues = async () => {
     try {
         const data = await fs.readFile(path.resolve(ASSETS_FOLDER, 'socketQueues.json'), 'utf8');

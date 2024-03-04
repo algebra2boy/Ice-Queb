@@ -9,4 +9,6 @@ const router = Router();
 router.post('/login', validate(loginSchema), authController.login);
 router.post('/signup', validate(signupSchema), authController.signup);
 
+//TODO: Add a forget password route
+
 export default router;
