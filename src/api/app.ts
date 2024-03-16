@@ -2,18 +2,14 @@ import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-import http from 'http';
 import 'dotenv/config';
 
 import routes from './routes/routes.js';
-import { setupSocketServer } from './configs/socketServer.config.js';
 import { MongoDB } from './configs/database.config.js';
 import morganMiddleware from './middlewares/Morgan.middleware.js';
 import errorMiddleware from './middlewares/Error.middleware.js';
 
 const app = express();
-const server = http.createServer(app);
-setupSocketServer(server);
 
 /**
  * Dependencies configurations

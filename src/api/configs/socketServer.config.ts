@@ -21,8 +21,8 @@ const loadQueues = async () => {
 };
 const updateQueues = async (newQueues: Queue[]) => {
     try {
-        const data = JSON.stringify(newQueues);
-        await fs.writeFile(path.resolve(ASSETS_FOLDER, 'queues.json'), data, 'utf8');
+        const data = JSON.stringify(newQueues, null, 4);
+        await fs.writeFile(path.resolve(ASSETS_FOLDER, 'socketQueues.json'), data, 'utf8');
     } catch (err) {
         console.log(err);
     }
@@ -38,11 +38,20 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
             console.log('A client disconnected');
         });
 
-        socket.on('join queue', async (studentEmail, className, sessionNumber, day, startTime) => {
+        socket.on('join queue', async (data) => {
+            const { studentEmail, className, sessionNumber, day, startTime } = data;
+            // console.log("joined ")
+            console.log("socket.id" + socket.id)
+            console.log("studentEmail" + studentEmail)
+            console.log("className" + className)
+            console.log("sessionNumber" + sessionNumber)
+            console.log("day" + day)
+            console.log("startTime" + startTime)
+
             const queues = await loadQueues();
-
+            console.log(queues);
             const targetQueue = findTargetQueue(queues, className, sessionNumber, day, startTime);
-
+            console.log(targetQueue);
             if (!targetQueue) {
                 io.to(socket.id).emit('failed joining queue', 'No such queue is found');
                 return;
@@ -63,7 +72,8 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
 
         });
 
-        socket.on('leave queue', async (studentEmail, className, sessionNumber, day, startTime) => {
+        socket.on('leave queue', async (data) => {
+            const { studentEmail, className, sessionNumber, day, startTime } = data;
             const queues = await loadQueues();
 
             const targetQueue = findTargetQueue(queues, className, sessionNumber, day, startTime);

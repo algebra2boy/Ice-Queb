@@ -1,9 +1,12 @@
 import app from './app.js';
+import { setupSocketServer } from './configs/socketServer.config.js';
 
 const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
     console.log(`the server is running on port ${PORT}`);
 });
+
+setupSocketServer(server);
 
 export default server;

@@ -1,0 +1,34 @@
+[
+    {
+        "className": "CS520",
+        "sessionNumber": "1",
+        "day": "Tuesday",
+        "startTime": "10:00",
+        "studentList": [
+            {
+                "socketId": "LxnlQfhJmPjw4JCJAAAB",
+                "email": "george2@umass.edu",
+                "joinTime": "2024-03-05T18:00:30.078Z",
+                "position": 0
+            },
+            {
+                "socketId": "zPSa_H0xbCG62_fSAAAH",
+                "email": "george2@umass.edu",
+                "joinTime": "2024-03-05T18:02:56.326Z",
+                "position": 1
+            },
+            {
+                "socketId": "PtP9XvYhh-V2iKOqAAAB",
+                "email": "george2@umass.ed",
+                "joinTime": "2024-03-05T18:05:01.737Z",
+                "position": 2
+            },
+            {
+                "socketId": "_YVv8EO95NZTDoZYAAAB",
+                "email": "george2@umass.edu",
+                "joinTime": "2024-03-05T18:05:11.161Z",
+                "position": 3
+            }
+        ]
+    }
+]
