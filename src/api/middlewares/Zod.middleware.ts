@@ -18,6 +18,7 @@ const ZodValidationMiddleware =
         } catch (error) {
             return res.status(status.BAD_REQUEST).json({
                 errors: (error as ZodError).issues.map(x => x.message),
+                status: 'failure',
             });
         }
     };

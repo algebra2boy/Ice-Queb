@@ -9,7 +9,7 @@ import { Queue, StudentInQueue } from '../services/queue/queue.model.js';
 const ASSETS_FOLDER = path.resolve(process.cwd(), 'src/assets');
 
 // temporary helper functions
-//TODO: TEST SOCKET SERVER 
+//TODO: TEST SOCKET SERVER
 const loadQueues = async () => {
     try {
         const data = await fs.readFile(path.resolve(ASSETS_FOLDER, 'socketQueues.json'), 'utf8');
@@ -38,15 +38,15 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
             console.log('A client disconnected');
         });
 
-        socket.on('join queue', async (data) => {
+        socket.on('join queue', async data => {
             const { studentEmail, className, sessionNumber, day, startTime } = data;
             // console.log("joined ")
-            console.log("socket.id" + socket.id)
-            console.log("studentEmail" + studentEmail)
-            console.log("className" + className)
-            console.log("sessionNumber" + sessionNumber)
-            console.log("day" + day)
-            console.log("startTime" + startTime)
+            console.log('socket.id' + socket.id);
+            console.log('studentEmail' + studentEmail);
+            console.log('className' + className);
+            console.log('sessionNumber' + sessionNumber);
+            console.log('day' + day);
+            console.log('startTime' + startTime);
 
             const queues = await loadQueues();
             console.log(queues);
@@ -69,10 +69,9 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
             await updateQueues(queues);
 
             io.to(socket.id).emit('joined queue', pplInQueue - 1);
-
         });
 
-        socket.on('leave queue', async (data) => {
+        socket.on('leave queue', async data => {
             const { studentEmail, className, sessionNumber, day, startTime } = data;
             const queues = await loadQueues();
 
@@ -93,7 +92,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 for (let i = 0; i < studentsInQueue.length; i++) {
                     const currStudent = studentsInQueue[i];
                     if (i !== currStudent.position) {
-                        io.to(currStudent.socketId).emit("left queue", currStudent.position - 1);
+                        io.to(currStudent.socketId).emit('left queue', currStudent.position - 1);
                         currStudent.position = i;
                     }
                 }
@@ -101,14 +100,19 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
 
             // will be replaced by actual database
             await updateQueues(queues);
-
         });
     });
 
     return io;
 }
 
-function findTargetQueue(queues: Queue[], className: string, sessionNumber: string, day: string, startTime: string) {
+function findTargetQueue(
+    queues: Queue[],
+    className: string,
+    sessionNumber: string,
+    day: string,
+    startTime: string,
+) {
     return queues.find((queue: Queue) => {
         return (
             queue.className === className &&
