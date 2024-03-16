@@ -12,7 +12,7 @@ const ErrorMiddleware = (error: Error, req: Request, res: Response, next: NextFu
     if (error && error instanceof HttpError) {
         res.status(error.errorCode).json({
             message: error.errorMessage,
-            status: 'failure'
+            status: 'failure',
         });
     } else if (error) {
         res.status(status.INTERNAL_SERVER_ERROR).json({
