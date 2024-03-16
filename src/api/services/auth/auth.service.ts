@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 
 import { MongoDB } from '../../configs/database.config.js';
 import { DatabaseCollection } from '../../configs/constants.config.js';
-import { ErrorMessages } from '../../configs/errorsMessage.config.js';
+import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import { User, RegisterUser } from './auth.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { generateToken } from '../../utils/token.util.js';
@@ -17,16 +17,13 @@ async function login(payload: User): Promise<RegisterUser> {
     const user = await findUserByEmail(accountCollection, payload.email);
 
     if (!user) {
-        throw new HttpError(status.NOT_FOUND, ErrorMessages.USER_NOT_FOUND(payload.email));
+        throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(payload.email));
     }
 
     const isPasswordCorrect: boolean = await validatePassword(payload.password, user.password);
 
     if (!isPasswordCorrect) {
-        throw new HttpError(
-            status.UNAUTHORIZED,
-            ErrorMessages.USER_PASSWORD_NOT_CORRECT(payload.email),
-        );
+        throw new HttpError(status.UNAUTHORIZED, error.USER_PASSWORD_NOT_CORRECT(payload.email));
     }
 
     return {
@@ -44,10 +41,7 @@ async function signup(payload: User): Promise<RegisterUser> {
     const existingUser = await findUserByEmail(accountCollection, payload.email);
 
     if (existingUser) {
-        throw new HttpError(
-            status.FORBIDDEN,
-            ErrorMessages.USER_ALREADY_EXISTS(payload.email),
-        );
+        throw new HttpError(status.FORBIDDEN, error.USER_ALREADY_EXISTS(payload.email));
     }
 
     await createNewUser(accountCollection, payload);
@@ -59,10 +53,9 @@ async function signup(payload: User): Promise<RegisterUser> {
     };
 }
 
-//
-//  HELPER FUNCTIONS FOR THE AUTH SERVICES
-//
-
+////////////////////////////////////////////////////////////////////////////////
+//////////////////  HELPER FUNCTIONS FOR THE AUTH SERVICES    //////////////////
+////////////////////////////////////////////////////////////////////////////////
 async function findUserByEmail(accountCollection: Collection<User>, email: string) {
     return await accountCollection.findOne({ email: email });
 }

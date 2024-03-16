@@ -97,12 +97,13 @@ describe('authentication service routes', () => {
     });
 
     describe('login for a user', () => {
-
         it('sign up a user then login successfully', async () => {
             const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: true };
             await request(app).post('/api/auth/signup').send(payload);
 
-            const response = await request(app).post('/api/auth/login').send({ email: 'gg1@example.com', password: 'password123' });
+            const response = await request(app)
+                .post('/api/auth/login')
+                .send({ email: 'gg1@example.com', password: 'password123' });
 
             expect(response.statusCode).toBe(200);
             expect(response.body.email).toBeDefined();
@@ -114,7 +115,9 @@ describe('authentication service routes', () => {
             const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: true };
             await request(app).post('/api/auth/signup').send(payload);
 
-            const response = await request(app).post('/api/auth/login').send({ email: 'gg1@example.com', password: 'badpassword' });
+            const response = await request(app)
+                .post('/api/auth/login')
+                .send({ email: 'gg1@example.com', password: 'badpassword' });
 
             expect(response.statusCode).toBe(401);
             expect(response.body).toStrictEqual({
@@ -167,12 +170,11 @@ describe('authentication service routes', () => {
             const payload = { email: 'apple' };
             const response = await request(app).post('/api/auth/login').send(payload);
             expect(response.statusCode).toBe(400);
-            
+
             expect(response.body).toStrictEqual({
                 errors: ['This is not a valid email', 'Password does not exist'],
                 status: 'failure',
             });
         });
-
     });
 });
