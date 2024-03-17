@@ -12,17 +12,17 @@ async function getAllOHByStudentEmail(email: string): Promise<[OfficeHour]> {
         DatabaseCollection.OfficeHour,
     );
 
-    const studentOfficeHourDocument = await officeHourCollection.findOne({ email: email });
+    const studentOfficeHourDocument = await officeHourCollection.findOne({ studentEmail: email });
 
     if (!studentOfficeHourDocument) {
         throw new HttpError(status.NOT_FOUND, error.OFFICE_HOUR_STUDENT_DOCUMENT_NOT_FOUND(email));
     }
 
-    if (!studentOfficeHourDocument.officeHours) {
+    if (!studentOfficeHourDocument.officeHour) {
         throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_NOT_FOUND(email));
     }
 
-    return studentOfficeHourDocument.officeHours;
+    return studentOfficeHourDocument.officeHour;
 }
 
 async function publishAllClassByStudentEmail(classSession: Class, emails: string[]) {

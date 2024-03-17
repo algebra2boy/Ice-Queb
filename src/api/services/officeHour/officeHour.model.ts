@@ -22,5 +22,5 @@ export interface OfficeHour {
 
 export interface StudentOfficeHour {
     studenEmail: string;
-    officeHours: [OfficeHour];
+    officeHour: [OfficeHour];
 }
