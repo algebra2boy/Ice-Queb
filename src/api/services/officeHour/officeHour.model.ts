@@ -6,7 +6,7 @@ export interface StudentOfficeHourList {
 }
 
 export interface OfficeHour {
-    id: OfficeHour;
+    id: OfficeHourId;
     facultyName: string;
     day: number;
     startDate: string;
@@ -16,3 +16,5 @@ export interface OfficeHour {
     courseDepartment: string;
     courseNumber: string;
 }
+
+export type OfficeHourPayload = Omit<OfficeHour, 'id'>;

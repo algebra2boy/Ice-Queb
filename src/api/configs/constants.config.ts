@@ -1,4 +1,5 @@
 export enum DatabaseCollection {
-    Account = 'account',
-    OfficeHour = 'officeHour',
+    Account = 'Account',
+    OfficeHour = 'OfficeHour',
+    StudentOfficeHour = 'StudentOfficeHour',
 }
