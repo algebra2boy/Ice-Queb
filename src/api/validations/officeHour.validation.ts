@@ -7,13 +7,13 @@ const classSessionSchema = z.object({
     sessionNumber: schemaLibrary.sessionNumberValidation,
 });
 
-export const officeHourListSchema = z.object({
+export const classListSchema = z.object({
     query: z.object({
         email: schemaLibrary.emailValidation,
     }),
 });
 
-export const officeHourPublishSchema = z.object({
+export const classPublishSchema = z.object({
     body: z.object({
         classSession: classSessionSchema,
         emails: emailArraySchema,
