@@ -4,7 +4,7 @@ import * as officeHourService from './officeHour.service.js';
 
 export const getOfficeHourList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const officeHourList = await officeHourService.getAllOfficeHourByStudentEmail(
+        const officeHourList = await officeHourService.getAllOHByStudentEmail(
             req.query.email as string,
         );
         res.status(status.OK).json(officeHourList);
@@ -13,15 +13,17 @@ export const getOfficeHourList = async (req: Request, res: Response, next: NextF
     }
 };
 
-export const uploadOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
+export const publishOfficeHourList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const uploadResult = await officeHourService.uploadOfficeHour(req.body);
+        const failedEmails = await officeHourService.publishAllClassByStudentEmail(
+            req.body.classSession,
+            req.body.emails,
+        );
 
-        if (uploadResult) {
-            uploadResult;
-            res.status(status.OK).json(uploadResult);
+        if (failedEmails.length > 0) {
+            res.status(status.OK).json({ failedEmails: failedEmails });
         } else {
-            res.status(status.OK).json({ officeHourExists: 'Office Hour already exists'});
+            res.status(status.OK).json({ status: 'success' });
         }
     } catch (error) {
         next(error);
