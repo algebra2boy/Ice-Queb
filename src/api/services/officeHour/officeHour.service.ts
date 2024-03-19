@@ -1,81 +1,77 @@
 import { Collection } from 'mongodb';
 import status from 'http-status';
 
-import { DatabaseCollection } from '../../configs/constants.config.js';
-import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import { MongoDB } from '../../configs/database.config.js';
-import { AccountClass, Class, StudentOfficeHour, OfficeHour } from './officeHour.model.js';
+import { StudentOfficeHourList, OfficeHour, OfficeHourId } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 
-async function getAllOHByStudentEmail(email: string): Promise<[OfficeHour]> {
-    const officeHourCollection: Collection<StudentOfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+async function getAllOfficeHourByStudentEmail(email: string) {
+    const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
+        MongoDB.getIceQuebDB().collection('StudentOfficeHour');
 
-    const studentOfficeHourDocument = await officeHourCollection.findOne({ studentEmail: email });
+    const officeHours = getOfficeHourByEmail(studentOfficeHourCollection, email);
 
-    if (!studentOfficeHourDocument) {
-        throw new HttpError(status.NOT_FOUND, error.OFFICE_HOUR_STUDENT_DOCUMENT_NOT_FOUND(email));
+    if (!officeHours) {
+        throw new HttpError(status.NOT_FOUND, `classes are not found for ${email}`);
     }
 
-    if (!studentOfficeHourDocument.officeHour) {
-        throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_NOT_FOUND(email));
-    }
-
-    return studentOfficeHourDocument.officeHour;
+    return officeHours;
 }
 
-async function publishAllClassByStudentEmail(classSession: Class, emails: string[]) {
-    const officeHourCollection: Collection<AccountClass> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+async function uploadOfficeHour(payload: OfficeHour) {
+    const {
+        id,
+        facultyName,
+        day,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        courseDepartment,
+        courseNumber,
+    } = payload;
 
-    const failedEmails: string[] = [];
+    const officeHourToUpload: OfficeHour = {
+        id,
+        facultyName,
+        day,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        courseDepartment,
+        courseNumber,
+    };
 
-    for (const email of emails) {
-        const failedEmail: string | undefined = await updateClassByEmail(
-            officeHourCollection,
-            classSession,
-            email,
-        );
+    const officeHourCollection: Collection<OfficeHour> =
+        MongoDB.getIceQuebDB().collection('OfficeHour');
 
-        if (failedEmail !== undefined) {
-            failedEmails.push(failedEmail);
-        }
+    const isOfficeHourExisted = await officeHourCollection.findOne(officeHourToUpload);
+
+    if (isOfficeHourExisted === null) {
+        await officeHourCollection.insertOne(officeHourToUpload);
+        return officeHourToUpload;
     }
-
-    return failedEmails;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//////////////////  HELPER FUNCTIONS FOR THE OFFICE HOUR SERVICES    ///////////
-////////////////////////////////////////////////////////////////////////////////
-async function updateClassByEmail(
-    classCollection: Collection<AccountClass>,
-    classSession: Class,
+//
+//  HELPER FUNCTION FOR CLASS SERVICE
+//
+
+async function getOfficeHourByEmail(
+    studentOfficeHourCollection: Collection<StudentOfficeHourList>,
     email: string,
-) {
-    const document = await classCollection.findOne({ email: email });
+): Promise<[OfficeHourId] | undefined> {
+    const document = await studentOfficeHourCollection.findOne({ email: email });
 
-    // Does not find the student's email
     if (!document) {
-        return email;
+        throw new HttpError(
+            status.NOT_FOUND,
+            `no student office hour document is found for ${email}`,
+        );
     }
 
-    // check if the student already has this class
-    if (
-        document.classes.every(
-            (c: Class) =>
-                c.className !== classSession.className ||
-                c.sessionNumber !== classSession.sessionNumber,
-        )
-    ) {
-        document.classes.push(classSession);
-    } else {
-        return;
-    }
-
-    await classCollection.updateOne({ email: email }, { $set: document });
+    return document.officeHour;
 }
 
-export { getAllOHByStudentEmail, publishAllClassByStudentEmail };
+export { getAllOfficeHourByStudentEmail, uploadOfficeHour };

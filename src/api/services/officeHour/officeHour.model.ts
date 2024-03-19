@@ -1,26 +1,18 @@
-export interface AccountClass {
-    email: string;
-    classes: [Class];
-}
+export type OfficeHourId = string;
 
-export interface Class {
-    className: string;
-    sessionNumber: string;
+export interface StudentOfficeHourList {
+    email: string;
+    officeHour: [OfficeHourId];
 }
 
 export interface OfficeHour {
-    id: number;
+    id: OfficeHour;
     facultyName: string;
-    day: 0 | 1 | 2 | 3 | 4 | 5 | 6; // Sunday - Saturday: 0 - 6
+    day: number;
+    startDate: string;
+    endDate: string;
     startTime: string;
     endTime: string;
-    initialDate: string;
-    terminalDate: string;
     courseDepartment: string;
-    courseNumber: number;
-}
-
-export interface StudentOfficeHour {
-    studenEmail: string;
-    officeHour: [OfficeHour];
+    courseNumber: string;
 }

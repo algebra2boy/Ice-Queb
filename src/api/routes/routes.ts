@@ -6,6 +6,6 @@ import OfficeHourRouter from '../services/officeHour/officeHour.routes.js';
 const router = Router();
 
 router.use('/auth', AuthRouter);
-router.use('/officehour', OfficeHourRouter);
+router.use('/officeHour', OfficeHourRouter);
 
 export default Router().use('/api', router);

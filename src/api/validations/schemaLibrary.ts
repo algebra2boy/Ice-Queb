@@ -5,13 +5,8 @@ export default {
         .string({ required_error: 'Email does not exist' })
         .min(1, 'Email should have at least one character')
         .email('This is not a valid email'),
-    passwordValidation: z
-        .string({ required_error: 'Password does not exist' })
-        .min(8, 'Password should have at least eight character'),
-    classNameValidation: z
-        .string({ required_error: 'Class name does not exist' })
-        .min(1, 'Class name should have at least one character'),
-    sessionNumberValidation: z
-        .string({ required_error: 'Session number does not exist' })
-        .min(1, 'Session number should have at least one character'),
+    passwordValidation: z.string({ required_error: 'Password does not exist' }),
+    dayValidation: z.number().int().min(0).max(6),
+    timeValidation: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format'),
+    dateValidation: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
 };
