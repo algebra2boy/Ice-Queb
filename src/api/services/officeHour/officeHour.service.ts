@@ -14,7 +14,6 @@ import {
 import { HttpError } from '../../utils/httpError.util.js';
 
 async function getAllOfficeHourByStudentEmail(email: string): Promise<OfficeHour[]> {
-
     // Get the student office hour collection and find the student office hour id by email
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
         MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
@@ -37,9 +36,9 @@ async function getAllOfficeHourByStudentEmail(email: string): Promise<OfficeHour
         if (officeHour) {
             officeHours.push(officeHour);
         }
-    }       
+    }
 
-    return officeHours;  
+    return officeHours;
 }
 
 async function uploadOfficeHour(payload: OfficeHourPayload): Promise<OfficeHour> {
