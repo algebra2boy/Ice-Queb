@@ -30,7 +30,7 @@ async function login(payload: User): Promise<RegisterUser> {
         email: user.email,
         isTeacher: user.isTeacher,
         token: generateToken(user.email),
-        status: 'success'
+        status: 'success',
     };
 }
 
@@ -51,7 +51,7 @@ async function signup(payload: User): Promise<RegisterUser> {
         email: payload.email,
         isTeacher: payload.isTeacher,
         token: generateToken(payload.email),
-        status: 'success'
+        status: 'success',
     };
 }
 

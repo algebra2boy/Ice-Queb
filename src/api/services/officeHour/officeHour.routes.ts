@@ -4,7 +4,7 @@ import validate from '../../middlewares/Zod.middleware.js';
 import {
     officeHourListSchema,
     officeHourUploadSchema,
-} from '../../validations/class.validation.js';
+} from '../../validations/officeHour.validation.js';
 
 const router = Router();
 

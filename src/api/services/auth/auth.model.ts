@@ -8,5 +8,5 @@ export interface RegisterUser {
     email: string;
     isTeacher: boolean;
     token: string;
-    status: string
+    status: string;
 }

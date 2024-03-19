@@ -16,13 +16,7 @@ export const getOfficeHourList = async (req: Request, res: Response, next: NextF
 export const uploadOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const uploadResult = await officeHourService.uploadOfficeHour(req.body);
-
-        if (uploadResult) {
-            uploadResult;
-            res.status(status.OK).json(uploadResult);
-        } else {
-            res.status(status.OK).json({ officeHourExists: 'Office Hour already exists'});
-        }
+        res.status(status.OK).json(uploadResult);
     } catch (error) {
         next(error);
     }
