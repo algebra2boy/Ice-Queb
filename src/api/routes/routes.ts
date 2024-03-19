@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
 import AuthRouter from '../services/auth/auth.routes.js';
-import ClassRouter from '../services/class/class.routes.js';
+import OfficeHourRouter from '../services/officeHour/officeHour.routes.js';
 
 const router = Router();
 
 router.use('/auth', AuthRouter);
-router.use('/class', ClassRouter);
+router.use('/officeHour', OfficeHourRouter);
 
 export default Router().use('/api', router);
