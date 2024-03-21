@@ -18,22 +18,20 @@ describe('authentication service routes', () => {
 
     describe('sign up for a user', () => {
         it('correct signup', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: true };
+            const payload = { email: 'gg1@example.com', password: 'password123'};
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             expect(response.statusCode).toBe(201);
 
             // check body field is not undefined
             expect(response.body.email).toBeDefined();
-            expect(response.body.isTeacher).toBeDefined();
             expect(response.body.token).toBeDefined();
 
             expect(response.body.email).toBe(payload.email);
-            expect(response.body.isTeacher).toBe(payload.isTeacher);
         });
 
         it('duplicate signup', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: true };
+            const payload = { email: 'gg1@example.com', password: 'password123' };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             expect(response.statusCode).toBe(403);
@@ -45,24 +43,11 @@ describe('authentication service routes', () => {
         });
 
         it('missing email signup', async () => {
-            const payload = { password: 'password123', isTeacher: true };
+            const payload = { password: 'password123' };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                errors: ['Email does not exist'],
-                status: 'failure',
-            };
-
-            expect(response.statusCode).toBe(400);
-            expect(response.body).toStrictEqual(expectedError);
-        });
-
-        it('missing isTeacher signup', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123' };
-            const response = await request(app).post('/api/auth/signup').send(payload);
-
-            const expectedError = {
-                errors: ['isTeacher does not exist'],
+                message: ['Email does not exist'],
                 status: 'failure',
             };
 
@@ -71,23 +56,23 @@ describe('authentication service routes', () => {
         });
 
         it('missing password signup', async () => {
-            const payload = { email: 'gg1@example.com', isTeacher: true };
+            const payload = { email: 'gg1@example.com' };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                errors: ['Password does not exist'],
+                message: ['Password does not exist'],
                 status: 'failure',
             };
 
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual(expectedError);
         });
-        it('missing password and isTeacher signup', async () => {
+        it('missing password', async () => {
             const payload = { email: 'gg1@example.com' };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                errors: ['Password does not exist', 'isTeacher does not exist'],
+                message: ['Password does not exist'],
                 status: 'failure',
             };
 
@@ -98,7 +83,7 @@ describe('authentication service routes', () => {
 
     describe('login for a user', () => {
         it('sign up a user then login successfully', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: true };
+            const payload = { email: 'gg1@example.com', password: 'password123' };
             await request(app).post('/api/auth/signup').send(payload);
 
             const response = await request(app)
@@ -107,12 +92,11 @@ describe('authentication service routes', () => {
 
             expect(response.statusCode).toBe(200);
             expect(response.body.email).toBeDefined();
-            expect(response.body.isTeacher).toBeDefined();
             expect(response.body.token).toBeDefined();
         });
 
         it('sign up a user then login with a wrong password', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: true };
+            const payload = { email: 'gg1@example.com', password: 'password123'};
             await request(app).post('/api/auth/signup').send(payload);
 
             const response = await request(app)
@@ -141,7 +125,7 @@ describe('authentication service routes', () => {
             const response = await request(app).post('/api/auth/login');
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                errors: ['Email does not exist', 'Password does not exist'],
+                message: ['Email does not exist', 'Password does not exist'],
                 status: 'failure',
             });
         });
@@ -151,7 +135,7 @@ describe('authentication service routes', () => {
             const response = await request(app).post('/api/auth/login').send(payload);
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                errors: ['Email does not exist'],
+                message: ['Email does not exist'],
                 status: 'failure',
             });
         });
@@ -161,7 +145,7 @@ describe('authentication service routes', () => {
             const response = await request(app).post('/api/auth/login').send(payload);
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                errors: ['Password does not exist'],
+                message: ['Password does not exist'],
                 status: 'failure',
             });
         });
@@ -172,7 +156,7 @@ describe('authentication service routes', () => {
             expect(response.statusCode).toBe(400);
 
             expect(response.body).toStrictEqual({
-                errors: ['This is not a valid email', 'Password does not exist'],
+                message: ['This is not a valid email', 'Password does not exist'],
                 status: 'failure',
             });
         });
