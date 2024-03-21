@@ -18,7 +18,7 @@ describe('authentication service routes', () => {
 
     describe('sign up for a user', () => {
         it('correct signup', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123'};
+            const payload = { email: 'gg1@example.com', password: 'password123' };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             expect(response.statusCode).toBe(201);
@@ -96,7 +96,7 @@ describe('authentication service routes', () => {
         });
 
         it('sign up a user then login with a wrong password', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123'};
+            const payload = { email: 'gg1@example.com', password: 'password123' };
             await request(app).post('/api/auth/signup').send(payload);
 
             const response = await request(app)

@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 const generateToken = (email: string): string => {
     const payload = { user: { email } };
     const secretKey = process.env.JWT_SECRET || 'secretCat';
-    const expireTime = '10h';
+    const expireTime = '30d';
     return jwt.sign(payload, secretKey, { expiresIn: expireTime });
 };
 

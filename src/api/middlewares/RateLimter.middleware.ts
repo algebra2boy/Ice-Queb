@@ -2,7 +2,7 @@ import rateLimit from 'express-rate-limit';
 
 /**
  * Rate limiter for the auth service.
- * 
+ *
  * 429 (Too Many Requests) status code is returned when the limit is exceeded
  */
 export const authLimiter = rateLimit({
@@ -13,7 +13,7 @@ export const authLimiter = rateLimit({
 
 /**
  * Rate limiter for the office hour service.
- * 
+ *
  * 429 (Too Many Requests) status code is returned when the limit is exceeded
  */
 export const officeHourLimiter = rateLimit({
