@@ -13,6 +13,40 @@ export const getOfficeHourList = async (req: Request, res: Response, next: NextF
     }
 };
 
+export const searchOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const officeHourList = await officeHourService.searchOfficeHour(
+            req.query.instructorName as string,
+            req.query.courseName as string,
+        );
+        res.status(status.OK).json(officeHourList);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const addOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const officeHourList = await officeHourService.addOfficeHourToStudentList(
+            req.params.officeHourID as string,
+        );
+        res.status(status.OK).json(officeHourList);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const removeOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const officeHourList = await officeHourService.removeOfficeHourFromStudentList(
+            req.params.officeHourID as string,
+        );
+        res.status(status.OK).json(officeHourList);
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const uploadOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const uploadResult = await officeHourService.uploadOfficeHour(req.body);

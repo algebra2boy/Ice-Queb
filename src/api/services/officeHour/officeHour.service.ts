@@ -41,6 +41,18 @@ async function getAllOfficeHourByStudentEmail(email: string): Promise<OfficeHour
     return officeHours;
 }
 
+async function searchOfficeHour(instructorName: string, courseName: string) {
+    return { success: 'searchOfficeHour', instructorName: instructorName, courseName: courseName };
+}
+
+async function addOfficeHourToStudentList(officeHourID: string) {
+    return { success: 'addOfficeHourToStudentList', officeHourID: officeHourID };
+}
+
+async function removeOfficeHourFromStudentList(officeHourID: string) {
+    return { success: 'removeOfficeHourFromStudentList', officeHourID: officeHourID };
+}
+
 async function uploadOfficeHour(payload: OfficeHourPayload): Promise<OfficeHour> {
     const officeHourToUpload: OfficeHour = {
         id: uuidv4(),
@@ -77,4 +89,10 @@ async function getOfficeHourIDByEmail(
     return studentOfficeHourDocument.officeHour;
 }
 
-export { getAllOfficeHourByStudentEmail, uploadOfficeHour };
+export {
+    getAllOfficeHourByStudentEmail,
+    searchOfficeHour,
+    addOfficeHourToStudentList,
+    removeOfficeHourFromStudentList,
+    uploadOfficeHour,
+};
