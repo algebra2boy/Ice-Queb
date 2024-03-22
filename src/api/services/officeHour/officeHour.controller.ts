@@ -16,7 +16,7 @@ export const getOfficeHourList = async (req: Request, res: Response, next: NextF
 export const searchOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const officeHourList = await officeHourService.searchOfficeHour(
-            req.query.instructorName as string,
+            req.query.facultyName as string,
             req.query.courseName as string,
         );
         res.status(status.OK).json(officeHourList);
@@ -29,7 +29,8 @@ export const addOfficeHour = async (req: Request, res: Response, next: NextFunct
     try {
         const officeHourList = await officeHourService.addOfficeHourToStudentList(
             req.params.officeHourID as string,
-            // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             req.auth?.user?.email
         );
         res.status(status.OK).json(officeHourList);

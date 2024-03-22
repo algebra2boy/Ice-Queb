@@ -10,6 +10,7 @@ import {
     OfficeHour,
     OfficeHourId,
     OfficeHourPayload,
+    OfficeHourSearchingArguments,
 } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 
@@ -21,7 +22,7 @@ async function getAllOfficeHourByStudentEmail(email: string): Promise<OfficeHour
     const officeHourIDs = await getOfficeHourIDByEmail(studentOfficeHourCollection, email);
 
     if (!officeHourIDs) {
-        throw new HttpError(status.NOT_FOUND, error.STUDNET_OFFICE_HOUR_NOT_FOUND(email));
+        throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_NOT_FOUND(email));
     }
 
     // Get the office hour collection and find the student office hour by id
@@ -41,14 +42,37 @@ async function getAllOfficeHourByStudentEmail(email: string): Promise<OfficeHour
     return officeHours;
 }
 
-async function searchOfficeHour(instructorName: string, courseName: string) {
-    return { success: 'searchOfficeHour', instructorName: instructorName, courseName: courseName };
+async function searchOfficeHour(facultyName: string, courseName: string) {
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
+        DatabaseCollection.OfficeHour,
+    );
+
+    // split courseName into courseDepartment and courseNumber
+    const [, courseDepartment, courseNumber] = courseName
+        ? courseName.match(/^([a-zA-Z]+)?(\d+)?$/) ?? ["", ""]
+        : ["", ""];
+
+    // eliminate the empty searching arguments (the ones that the user left empty with)
+    const searchArguments = defineSearchArguments(facultyName, courseDepartment, courseNumber);
+
+    const searchResult = await officeHourCollection.find(searchArguments).toArray();
+
+    if (!searchArguments) {
+        throw new HttpError(status.NOT_FOUND, error.OFFICE_HOUR_NOT_FOUND);
+    }
+
+    return {
+        success: 'searchOfficeHour',
+        searchResult,
+    };
 }
 
 async function addOfficeHourToStudentList(officeHourID: string, studentEmail: string) {
-    
-
-    return { success: 'addOfficeHourToStudentList', officeHourID: officeHourID, studentEmail: studentEmail};
+    return {
+        success: 'addOfficeHourToStudentList',
+        officeHourID: officeHourID,
+        studentEmail: studentEmail,
+    };
 }
 
 async function removeOfficeHourFromStudentList(officeHourID: string) {
@@ -89,6 +113,24 @@ async function getOfficeHourIDByEmail(
     }
 
     return studentOfficeHourDocument.officeHour;
+}
+
+function defineSearchArguments(
+    facultyName: string,
+    courseDepartment: string,
+    courseNumber: string,
+) {
+    const searchArguments: OfficeHourSearchingArguments = {};
+    if (facultyName) {
+        searchArguments.facultyName = facultyName;
+    }
+    if (courseDepartment) {
+        searchArguments.courseDepartment = courseDepartment;
+    }
+    if (courseNumber) {
+        searchArguments.courseNumber = courseNumber;
+    }
+    return searchArguments;
 }
 
 export {

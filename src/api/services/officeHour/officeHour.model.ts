@@ -17,4 +17,10 @@ export interface OfficeHour {
     courseNumber: string;
 }
 
+export interface OfficeHourSearchingArguments {
+    facultyName?: string;
+    courseDepartment?: string;
+    courseNumber?: string;
+}
+
 export type OfficeHourPayload = Omit<OfficeHour, 'id'>;
