@@ -45,8 +45,10 @@ async function searchOfficeHour(instructorName: string, courseName: string) {
     return { success: 'searchOfficeHour', instructorName: instructorName, courseName: courseName };
 }
 
-async function addOfficeHourToStudentList(officeHourID: string) {
-    return { success: 'addOfficeHourToStudentList', officeHourID: officeHourID };
+async function addOfficeHourToStudentList(officeHourID: string, studentEmail: string) {
+    
+
+    return { success: 'addOfficeHourToStudentList', officeHourID: officeHourID, studentEmail: studentEmail};
 }
 
 async function removeOfficeHourFromStudentList(officeHourID: string) {

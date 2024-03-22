@@ -29,6 +29,8 @@ export const addOfficeHour = async (req: Request, res: Response, next: NextFunct
     try {
         const officeHourList = await officeHourService.addOfficeHourToStudentList(
             req.params.officeHourID as string,
+            // @ts-ignore
+            req.auth?.user?.email
         );
         res.status(status.OK).json(officeHourList);
     } catch (error) {
