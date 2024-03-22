@@ -7,12 +7,14 @@ import {
     officeHourUploadSchema,
 } from '../../validations/officeHour.validation.js';
 
+import jwtMiddleware from '../../middlewares/JsonWebToken.middleware.js';
+
 const router = Router();
 
 // STUDENT ROUTE
 router.get('/list', validate(officeHourListSchema), officeHourController.getOfficeHourList);
 router.get('/search', officeHourController.searchOfficeHour);
-router.post('/add/:officeHourID', validate(officeHourIDSchema), officeHourController.addOfficeHour);
+router.post('/add/:officeHourID', jwtMiddleware, validate(officeHourIDSchema), officeHourController.addOfficeHour);
 router.delete('/remove/:officeHourID', officeHourController.removeOfficeHour);
 
 // TEACHER ROUTE
