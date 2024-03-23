@@ -29,9 +29,7 @@ export const addOfficeHour = async (req: Request, res: Response, next: NextFunct
     try {
         const officeHourList = await officeHourService.addOfficeHourToStudentList(
             req.params.officeHourID as string,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            req.auth?.user?.email
+            req.auth.user.email
         );
         res.status(status.OK).json(officeHourList);
     } catch (error) {
@@ -43,6 +41,7 @@ export const removeOfficeHour = async (req: Request, res: Response, next: NextFu
     try {
         const officeHourList = await officeHourService.removeOfficeHourFromStudentList(
             req.params.officeHourID as string,
+            req.auth.user.email,
         );
         res.status(status.OK).json(officeHourList);
     } catch (error) {

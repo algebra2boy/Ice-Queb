@@ -15,7 +15,12 @@ const router = Router();
 router.get('/list', validate(officeHourListSchema), officeHourController.getOfficeHourList);
 router.get('/search', officeHourController.searchOfficeHour);
 router.post('/add/:officeHourID', jwtMiddleware, validate(officeHourIDSchema), officeHourController.addOfficeHour);
-router.delete('/remove/:officeHourID', officeHourController.removeOfficeHour);
+router.delete(
+    '/remove/:officeHourID',
+    jwtMiddleware,
+    validate(officeHourIDSchema),
+    officeHourController.removeOfficeHour,
+);
 
 // TEACHER ROUTE
 router.post('/upload', validate(officeHourUploadSchema), officeHourController.uploadOfficeHour);

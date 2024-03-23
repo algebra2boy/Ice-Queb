@@ -75,7 +75,9 @@ async function addOfficeHourToStudentList(officeHourID: string, studentEmail: st
     };
 }
 
-async function removeOfficeHourFromStudentList(officeHourID: string) {
+async function removeOfficeHourFromStudentList(officeHourID: string, email: string) {
+    // const officeHourIDs = await getAllOfficeHourByStudentEmail(email);
+    // const newOfficeHourIDs = officeHourIDs.filter((id: string) => id === officeHourID);
     return { success: 'removeOfficeHourFromStudentList', officeHourID: officeHourID };
 }
 
