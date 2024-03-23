@@ -19,5 +19,7 @@ export default {
     courseNumberValidation: z.string({ required_error: 'courseNumber does not exist' }),
 
     // uuid version 4 produces 36 random characters
-    officeHourIDValidation: z.string({ required_error: 'officeHourID does not exist' }).length(36, 'officeHourID should be 36 characters long'),
+    officeHourIDValidation: z
+        .string({ required_error: 'officeHourID does not exist' })
+        .length(36, 'officeHourID should be 36 characters long'),
 };
