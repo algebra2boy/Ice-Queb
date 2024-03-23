@@ -161,7 +161,7 @@ async function checkOfficeHourIDExistence(
     const officeHourDocument = await officeHourCollection.findOne({ id: officeHourId });
 
     if (!officeHourDocument) {
-        throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_ID_ALREADY_EXISTS(officeHourId));
+        throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_ID_DOES_NOT_EXISTS(officeHourId));
     }
 }
 
@@ -170,20 +170,22 @@ function returnAddOfficeHourResult(
     officeHourId: string,
     email: string,
 ) {
+    // Document did not exist before, so it was inserted.
     if (updateResult.matchedCount === 0) {
-        // Document did not exist before, so it was inserted.
         return {
-            message: `The officeHourID ${officeHourId} has been added to ${email}'s student office hour document.`,
+            message: `A new student office hour document has been created for ${email} with the officeHourID ${officeHourId}.`,
             status: 'success',
         };
-    } else if (updateResult.modifiedCount === 0) {
+
         // Document was found, but the officeHourId was not added because it already exists.
+    } else if (updateResult.modifiedCount === 0) {
         return {
             message: `The officeHourID ${officeHourId} is duplicated in the ${email} student office hour document.`,
             status: 'failure',
         };
-    } else {
+
         // Document was found and the officeHourId was added successfully.
+    } else {
         return {
             message: `The officeHourID ${officeHourId} has been added to ${email}'s student office hour document successfully.`,
             status: 'success',

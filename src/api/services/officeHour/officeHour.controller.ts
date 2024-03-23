@@ -27,11 +27,11 @@ export const searchOfficeHour = async (req: Request, res: Response, next: NextFu
 
 export const addOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const officeHourList = await officeHourService.addOfficeHourToStudentList(
+        const officeHourInfo = await officeHourService.addOfficeHourToStudentList(
             req.params.officeHourID as string,
             req.auth.user.email as string,
         );
-        res.status(status.CREATED).json(officeHourList);
+        res.status(status.CREATED).json(officeHourInfo);
     } catch (error) {
         next(error);
     }

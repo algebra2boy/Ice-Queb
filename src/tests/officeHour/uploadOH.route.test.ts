@@ -3,7 +3,7 @@ import app from '../../api/app.js';
 import server from '../../api/server.js';
 import { MongoDB } from '../../api/configs/database.config.js';
 
-describe('office hour service routes', () => {
+describe('office hour service office hour routes', () => {
     beforeAll(async () => {
         await MongoDB.runServer();
     });
@@ -85,7 +85,6 @@ describe('office hour service routes', () => {
                 fieldToRemove: 'courseNumber',
                 expectedError: ['courseNumber does not exist'],
             },
-
         ];
 
         interface Payload {
@@ -140,7 +139,7 @@ describe('office hour service routes', () => {
             expect(officeHourToUpload.day).toBe(payload.day);
             expect(officeHourToUpload.startTime).toBe(payload.startTime);
             expect(officeHourToUpload.endTime).toBe(payload.endTime);
-            expect(officeHourToUpload.courseDepartment).toBe("NUTR");
+            expect(officeHourToUpload.courseDepartment).toBe('NUTR');
             expect(officeHourToUpload.courseNumber).toBe(payload.courseNumber);
             expect(response.body.status).toBe('success');
         });
@@ -170,7 +169,7 @@ describe('office hour service routes', () => {
             expect(officeHourToUpload.day).toBe(payload.day);
             expect(officeHourToUpload.startTime).toBe(payload.startTime);
             expect(officeHourToUpload.endTime).toBe(payload.endTime);
-            expect(officeHourToUpload.courseDepartment).toBe("PLPATH");
+            expect(officeHourToUpload.courseDepartment).toBe('PLPATH');
             expect(officeHourToUpload.courseNumber).toBe(payload.courseNumber);
             expect(response.body.status).toBe('success');
         });
