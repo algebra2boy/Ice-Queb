@@ -13,6 +13,7 @@ import {
     OfficeHourSearchingArguments,
 } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
+import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
 
 async function getAllOfficeHourByStudentEmail(email: string): Promise<OfficeHour[]> {
     // Get the student office hour collection and find the student office hour id by email
@@ -84,6 +85,9 @@ async function uploadOfficeHour(payload: OfficeHourPayload): Promise<OfficeHour>
         id: uuidv4(),
         ...payload,
     };
+
+    // translate the department to the database format
+    officeHourToUpload.courseDepartment = departmentTranslation[officeHourToUpload.courseDepartment];
 
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
         DatabaseCollection.OfficeHour,
