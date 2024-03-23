@@ -14,4 +14,6 @@ export const ErrorMessages = {
         `No student office hour document is found for ${email}`,
     OFFICE_HOUR_ALREADY_EXISTS: 'Office Hour already exists',
     OFFICE_HOUR_NOT_FOUND: 'Office Hour not found',
+    OFFICE_HOUR_ID_ALREADY_EXISTS: (officeHourID: string) =>
+        `Office Hour ID ${officeHourID} does not exist in the office hour collection`,
 };

@@ -2,7 +2,7 @@ export type OfficeHourId = string;
 
 export interface StudentOfficeHourList {
     email: string;
-    officeHour: [OfficeHourId];
+    officeHourId: [OfficeHourId];
 }
 
 export interface OfficeHour {

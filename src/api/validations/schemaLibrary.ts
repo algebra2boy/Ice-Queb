@@ -1,4 +1,5 @@
 import z from 'zod';
+import { department } from '../utils/departmentTranslation.util.js';
 
 export default {
     // Auth service validation
@@ -15,7 +16,11 @@ export default {
     timeValidation: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format'),
     dateValidation: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
     facultyNameValidation: z.string({ required_error: 'facultyName does not exist' }),
-    courseDepartmentValidation: z.string({ required_error: 'courseDepartment does not exist' }),
+    courseDepartmentValidation: z
+        .string({ required_error: 'courseDepartment does not exist' })
+        .refine(courseDepartment => department.includes(courseDepartment), {
+            message: 'Invalid course department',
+        }),
     courseNumberValidation: z.string({ required_error: 'courseNumber does not exist' }),
 
     // uuid version 4 produces 36 random characters

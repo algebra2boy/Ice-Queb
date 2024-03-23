@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, UpdateResult } from 'mongodb';
 import status from 'http-status';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,32 +15,29 @@ import {
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
 
-async function getAllOfficeHourByStudentEmail(email: string): Promise<OfficeHour[]> {
-    // Get the student office hour collection and find the student office hour id by email
+async function getAllOfficeHourByStudentEmail(email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
         MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
 
-    const officeHourIDs = await getOfficeHourIDByEmail(studentOfficeHourCollection, email);
+    // get office hour ID that belongs to student
+    const officeHourIDs: string[] = await getOfficeHourIDByEmail(
+        studentOfficeHourCollection,
+        email,
+    );
 
-    if (!officeHourIDs) {
-        throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_NOT_FOUND(email));
-    }
-
-    // Get the office hour collection and find the student office hour by id
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
         DatabaseCollection.OfficeHour,
     );
 
-    const officeHours: OfficeHour[] = [];
+    // find document whose id contains any office hour id from officeHourIDs
+    const officeHoursCursor = officeHourCollection.find({ id: { $in: officeHourIDs } });
+    const officeHours: OfficeHour[] = await officeHoursCursor.toArray();
 
-    for (const officeHourID of officeHourIDs) {
-        const officeHour = await officeHourCollection.findOne({ id: officeHourID });
-        if (officeHour) {
-            officeHours.push(officeHour);
-        }
-    }
-
-    return officeHours;
+    return {
+        email,
+        officeHours,
+        status: 'success',
+    };
 }
 
 async function searchOfficeHour(facultyName: string, courseName: string) {
@@ -68,12 +65,22 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
     };
 }
 
-async function addOfficeHourToStudentList(officeHourID: string, studentEmail: string) {
-    return {
-        success: 'addOfficeHourToStudentList',
-        officeHourID: officeHourID,
-        studentEmail: studentEmail,
-    };
+async function addOfficeHourToStudentList(officeHourId: string, email: string) {
+    const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
+        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
+        DatabaseCollection.OfficeHour,
+    );
+
+    await checkOfficeHourIDExistence(officeHourCollection, officeHourId);
+
+    const filter = { email }; // filter by email
+    const update = { $addToSet: { officeHourId: officeHourId } };
+    const option = { upsert: true }; // if no document matches the filter, a new document will be created
+
+    const updateResult = await studentOfficeHourCollection.updateOne(filter, update, option);
+
+    return returnAddOfficeHourResult(updateResult, officeHourId, email);
 }
 
 async function removeOfficeHourFromStudentList(officeHourID: string, email: string) {
@@ -81,43 +88,50 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
         MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
     const officeHourIDs = await getOfficeHourIDByEmail(studentOfficeHourCollection, email);
 
-    let newOfficeHourList: string[] = []
+    let newOfficeHourList: string[] = [];
     if (officeHourIDs !== undefined) {
         newOfficeHourList = officeHourIDs.filter((id: OfficeHourId) => id !== officeHourID);
     }
 
-    console.log(newOfficeHourList)
+    console.log(newOfficeHourList);
 
     await studentOfficeHourCollection.updateOne(
         { email: email },
-        { $set: { email, officeHour: newOfficeHourList as [string]} },
+        { $set: { email, officeHour: newOfficeHourList as [string] } },
     );
 
     return { status: 'success' };
 }
 
-async function uploadOfficeHour(payload: OfficeHourPayload): Promise<OfficeHour> {
-    const officeHourToUpload: OfficeHour = {
-        id: uuidv4(),
-        ...payload,
-    };
-
-    // translate the department to the database format
-    officeHourToUpload.courseDepartment =
-        departmentTranslation[officeHourToUpload.courseDepartment];
-
+async function uploadOfficeHour(payload: OfficeHourPayload) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
         DatabaseCollection.OfficeHour,
     );
 
-    const officeHourDocument = await officeHourCollection.findOne(payload);
+    const payloadWithAbbreviatedCourseDepartment = {
+        ...payload,
+        courseDepartment: departmentTranslation[payload.courseDepartment],
+    };
+
+    const officeHourDocument = await officeHourCollection.findOne(
+        payloadWithAbbreviatedCourseDepartment,
+    );
 
     if (officeHourDocument) {
         throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_ALREADY_EXISTS);
     }
 
+    const officeHourToUpload: OfficeHour = {
+        id: uuidv4(),
+        ...payloadWithAbbreviatedCourseDepartment,
+    };
+
     await officeHourCollection.insertOne(officeHourToUpload);
-    return officeHourToUpload;
+
+    return {
+        officeHourToUpload,
+        status: 'success',
+    };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,14 +140,55 @@ async function uploadOfficeHour(payload: OfficeHourPayload): Promise<OfficeHour>
 async function getOfficeHourIDByEmail(
     studentOfficeHourCollection: Collection<StudentOfficeHourList>,
     email: string,
-): Promise<[OfficeHourId] | undefined> {
+): Promise<OfficeHourId[]> {
     const studentOfficeHourDocument = await studentOfficeHourCollection.findOne({ email: email });
 
     if (!studentOfficeHourDocument) {
         throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_DOCUMENT_NOT_FOUND(email));
     }
 
-    return studentOfficeHourDocument.officeHour;
+    if (!studentOfficeHourDocument.officeHourId) {
+        throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_NOT_FOUND(email));
+    }
+
+    return studentOfficeHourDocument.officeHourId;
+}
+
+async function checkOfficeHourIDExistence(
+    officeHourCollection: Collection<OfficeHour>,
+    officeHourId: string,
+) {
+    const officeHourDocument = await officeHourCollection.findOne({ id: officeHourId });
+
+    if (!officeHourDocument) {
+        throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_ID_ALREADY_EXISTS(officeHourId));
+    }
+}
+
+function returnAddOfficeHourResult(
+    updateResult: UpdateResult<StudentOfficeHourList>,
+    officeHourId: string,
+    email: string,
+) {
+    if (updateResult.matchedCount === 0) {
+        // Document did not exist before, so it was inserted.
+        return {
+            message: `The officeHourID ${officeHourId} has been added to ${email}'s student office hour document.`,
+            status: 'success',
+        };
+    } else if (updateResult.modifiedCount === 0) {
+        // Document was found, but the officeHourId was not added because it already exists.
+        return {
+            message: `The officeHourID ${officeHourId} is duplicated in the ${email} student office hour document.`,
+            status: 'failure',
+        };
+    } else {
+        // Document was found and the officeHourId was added successfully.
+        return {
+            message: `The officeHourID ${officeHourId} has been added to ${email}'s student office hour document successfully.`,
+            status: 'success',
+        };
+    }
 }
 
 function defineSearchArguments(

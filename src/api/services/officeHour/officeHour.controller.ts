@@ -31,7 +31,7 @@ export const addOfficeHour = async (req: Request, res: Response, next: NextFunct
             req.params.officeHourID as string,
             req.auth.user.email as string,
         );
-        res.status(status.OK).json(officeHourList);
+        res.status(status.CREATED).json(officeHourList);
     } catch (error) {
         next(error);
     }
