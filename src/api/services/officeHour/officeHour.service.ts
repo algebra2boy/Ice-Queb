@@ -49,8 +49,8 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
 
     // split courseName into courseDepartment and courseNumber
     const [, courseDepartment, courseNumber] = courseName
-        ? courseName.match(/^([a-zA-Z]+)?(\d+)?$/) ?? ["", ""]
-        : ["", ""];
+        ? courseName.match(/^([a-zA-Z]+)?(\d+[a-zA-Z]*)?$/) ?? ['', '']
+        : ['', ''];
 
     // eliminate the empty searching arguments (the ones that the user left empty with)
     const searchArguments = defineSearchArguments(facultyName, courseDepartment, courseNumber);
