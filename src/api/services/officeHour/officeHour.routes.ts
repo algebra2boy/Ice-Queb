@@ -20,7 +20,12 @@ router.post(
     validate(officeHourIDSchema),
     officeHourController.addOfficeHour,
 );
-router.delete('/remove/:officeHourID', officeHourController.removeOfficeHour);
+router.delete(
+    '/remove/:officeHourID',
+    jwtMiddleware,
+    validate(officeHourIDSchema),
+    officeHourController.removeOfficeHour,
+);
 
 // TEACHER ROUTE
 router.post('/upload', validate(officeHourUploadSchema), officeHourController.uploadOfficeHour);

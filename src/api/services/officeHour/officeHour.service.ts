@@ -63,7 +63,7 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
     }
 
     return {
-        success: 'searchOfficeHour',
+        status: 'success',
         searchResult,
     };
 }
@@ -77,9 +77,23 @@ async function addOfficeHourToStudentList(officeHourID: string, studentEmail: st
 }
 
 async function removeOfficeHourFromStudentList(officeHourID: string, email: string) {
-    // const officeHourIDs = await getAllOfficeHourByStudentEmail(email);
-    // const newOfficeHourIDs = officeHourIDs.filter((id: string) => id === officeHourID);
-    return { success: 'removeOfficeHourFromStudentList', officeHourID: officeHourID };
+    const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
+        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
+    const officeHourIDs = await getOfficeHourIDByEmail(studentOfficeHourCollection, email);
+
+    let newOfficeHourList: string[] = []
+    if (officeHourIDs !== undefined) {
+        newOfficeHourList = officeHourIDs.filter((id: OfficeHourId) => id !== officeHourID);
+    }
+
+    console.log(newOfficeHourList)
+
+    await studentOfficeHourCollection.updateOne(
+        { email: email },
+        { $set: { email, officeHour: newOfficeHourList as [string]} },
+    );
+
+    return { status: 'success' };
 }
 
 async function uploadOfficeHour(payload: OfficeHourPayload): Promise<OfficeHour> {
@@ -89,7 +103,8 @@ async function uploadOfficeHour(payload: OfficeHourPayload): Promise<OfficeHour>
     };
 
     // translate the department to the database format
-    officeHourToUpload.courseDepartment = departmentTranslation[officeHourToUpload.courseDepartment];
+    officeHourToUpload.courseDepartment =
+        departmentTranslation[officeHourToUpload.courseDepartment];
 
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
         DatabaseCollection.OfficeHour,
