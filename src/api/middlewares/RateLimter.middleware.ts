@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit';
+import { ErrorMessages as error } from '../configs/errorsMessage.config.js';
 
 /**
  * Rate limiter for the auth service.
@@ -8,7 +9,7 @@ import rateLimit from 'express-rate-limit';
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 5 minutes
     max: 20, // limit each IP to 20 requests per windowMs
-    message: 'Too many requests to the auth service from this IP, please try again after 5 minutes',
+    message: error.RATE_LIMITER_AUTH,
 });
 
 /**
@@ -18,7 +19,6 @@ export const authLimiter = rateLimit({
  */
 export const officeHourLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 10 minutes
-    max: 50, // limit each IP to 20 requests per windowMs
-    message:
-        'Too many requests to the office hour service from this IP, please try again after 10 minutes',
+    max: 150, // limit each IP to 150 requests per windowMs
+    message: error.RATE_LIMITER_OFFICE_HOUR,
 });

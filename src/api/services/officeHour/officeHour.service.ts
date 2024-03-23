@@ -179,10 +179,8 @@ function returnAddOfficeHourResult(
 
         // Document was found, but the officeHourId was not added because it already exists.
     } else if (updateResult.modifiedCount === 0) {
-        return {
-            message: `The officeHourID ${officeHourId} is duplicated in the ${email} student office hour document.`,
-            status: 'failure',
-        };
+
+        throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_ID_DUPLICATED(officeHourId, email));
 
         // Document was found and the officeHourId was added successfully.
     } else {

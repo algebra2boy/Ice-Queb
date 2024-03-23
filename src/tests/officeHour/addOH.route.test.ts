@@ -126,7 +126,7 @@ describe('office hour service add OH routes', () => {
                 .post(`/api/officeHour/add/${OH2_ID}`)
                 .set('Authorization', `Bearer ${token}`);
 
-            expect(addOHResponse.statusCode).toBe(201);
+            expect(addOHResponse.statusCode).toBe(400);
             expect(addOHResponse.body).toStrictEqual({
                 message: `The officeHourID ${OH2_ID} is duplicated in the ${email} student office hour document.`,
                 status: 'failure',

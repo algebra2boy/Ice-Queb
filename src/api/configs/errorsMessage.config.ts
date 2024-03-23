@@ -16,4 +16,12 @@ export const ErrorMessages = {
     OFFICE_HOUR_NOT_FOUND: 'Office Hour not found',
     OFFICE_HOUR_ID_DOES_NOT_EXISTS: (officeHourID: string) =>
         `Office Hour ID ${officeHourID} does not exist in the office hour collection`,
+
+    OFFICE_HOUR_ID_DUPLICATED: (officeHourID: string, email: string) =>
+        `The officeHourID ${officeHourID} is duplicated in the ${email} student office hour document.`,
+
+    // Rate Limiter error messages
+    RATE_LIMITER_AUTH: 'Too many requests to the auth service from this IP, please try again after 5 minutes',
+    RATE_LIMITER_OFFICE_HOUR:
+        'Too many requests to the office hour service from this IP, please try again after 10 minutes',
 };
