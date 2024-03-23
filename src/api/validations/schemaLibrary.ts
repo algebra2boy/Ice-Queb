@@ -12,9 +12,19 @@ export default {
         .min(8, 'Password should have at least 8 characters'),
 
     // Office Hour service validation
-    dayValidation: z.number().int().min(0).max(6),
-    timeValidation: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format'),
-    dateValidation: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+    dayValidation: z
+        .number({ required_error: 'Day does not exist' })
+        .int({ message: 'Day should be an integer' })
+        .min(0, { message: 'Day should be between 0 and 6' })
+        .max(6, { message: 'Day should be between 0 and 6' }),
+    timeValidation: z
+        .string({ required_error: 'Time does not exist' })
+        .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, { message: 'Invalid time format' }),
+    dateValidation: z
+        .string({
+            required_error: 'Date does not exist',
+        })
+        .regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Invalid date format' }),
     facultyNameValidation: z.string({ required_error: 'facultyName does not exist' }),
     courseDepartmentValidation: z
         .string({ required_error: 'courseDepartment does not exist' })

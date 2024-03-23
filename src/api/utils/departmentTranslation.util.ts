@@ -37,6 +37,7 @@ export const departmentTranslation: DepartmentTranslation = {
     'Military Science': 'MILSCI',
     Marketing: 'MKTG',
     Chemistry: 'CHEM',
+    'Computer Science': 'COMPSCI',
     Music: 'MUSIC',
     'Natural Resource Studies': 'NAREST',
     'Communication Disorders': 'COMDIS',

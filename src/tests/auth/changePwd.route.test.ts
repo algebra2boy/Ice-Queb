@@ -1,4 +1,4 @@
-import app from '../api/app.js';
+import app from '../../api/app.js';
 import request from 'supertest';
 
 describe('simple route', () => {
