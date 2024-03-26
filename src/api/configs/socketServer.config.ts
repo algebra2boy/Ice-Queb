@@ -3,9 +3,10 @@ import http from 'http';
 import mongoose from 'mongoose';
 import Queue, { QueueDocument } from '../services/queue/queue.model.js';
 
-mongoose.connect('mongodb://localhost:27017/iceque')
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error(err));
+// mongoose
+//     .connect('mongodb://localhost:27017/iceque')
+//     .then(() => console.log('MongoDB connected'))
+//     .catch(err => console.error(err));
 
 export function setupSocketServer(server: http.Server): SocketIOServer {
     const io: SocketIOServer = new SocketIOServer(server);
@@ -27,7 +28,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     socketId: socket.id,
                     email: studentEmail,
                     joinTime: new Date(),
-                    position: pplInQueue
+                    position: pplInQueue,
                 });
 
                 await targetQueue.save(); // Save the updated queue document
@@ -48,7 +49,9 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 }
 
                 const studentsInQueue = targetQueue.studentList;
-                const targetIdx = studentsInQueue.findIndex(student => student.email === studentEmail);
+                const targetIdx = studentsInQueue.findIndex(
+                    student => student.email === studentEmail,
+                );
 
                 if (targetIdx !== -1) {
                     studentsInQueue.splice(targetIdx, 1);
@@ -91,7 +94,12 @@ async function updateQueues(id: string, updateData: Partial<QueueDocument>) {
 }
 
 // Find a specific queue based on criteria
-async function findTargetQueue(className: string, sessionNumber: string, day: string, startTime: string) {
+async function findTargetQueue(
+    className: string,
+    sessionNumber: string,
+    day: string,
+    startTime: string,
+) {
     try {
         return await Queue.findOne({ className, sessionNumber, day, startTime });
     } catch (err) {
