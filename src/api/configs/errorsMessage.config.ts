@@ -21,7 +21,8 @@ export const ErrorMessages = {
         `The officeHourID ${officeHourID} is duplicated in the ${email} student office hour document.`,
 
     // Rate Limiter error messages
-    RATE_LIMITER_AUTH: 'Too many requests to the auth service from this IP, please try again after 5 minutes',
+    RATE_LIMITER_AUTH:
+        'Too many requests to the auth service from this IP, please try again after 5 minutes',
     RATE_LIMITER_OFFICE_HOUR:
         'Too many requests to the office hour service from this IP, please try again after 10 minutes',
 };
