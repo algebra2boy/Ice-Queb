@@ -28,9 +28,8 @@ async function login(payload: User): Promise<RegisterUser> {
 
     return {
         email: user.email,
-        isTeacher: user.isTeacher,
         token: generateToken(user.email),
-        status: 'success'
+        status: 'success',
     };
 }
 
@@ -49,9 +48,8 @@ async function signup(payload: User): Promise<RegisterUser> {
 
     return {
         email: payload.email,
-        isTeacher: payload.isTeacher,
         token: generateToken(payload.email),
-        status: 'success'
+        status: 'success',
     };
 }
 
@@ -68,7 +66,6 @@ async function createNewUser(accountCollection: Collection<User>, payload: User)
     await accountCollection.insertOne({
         email: payload.email,
         password: hashedPassword,
-        isTeacher: payload.isTeacher,
     });
 }
 

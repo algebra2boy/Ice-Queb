@@ -15,4 +15,6 @@
   "ts-node": {
     "esm": true,
   },
+  "files": ["src/api/utils/request.d.ts"],
+  "include": ["src/**/*.ts"]
 }
