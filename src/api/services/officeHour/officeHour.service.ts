@@ -92,11 +92,19 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
 
     await checkOfficeHourIDExistence(officeHourCollection, officeHourID);
 
-    const officeHourIDs: string[] = await getOfficeHourIDByEmail(studentOfficeHourCollection, email);
-    const newofficeHourIDs: string[] = officeHourIDs.filter((id: OfficeHourId) => id !== officeHourID);
+    const officeHourIDs: string[] = await getOfficeHourIDByEmail(
+        studentOfficeHourCollection,
+        email,
+    );
+    const newofficeHourIDs: string[] = officeHourIDs.filter(
+        (id: OfficeHourId) => id !== officeHourID,
+    );
 
     const filter = { email: email };
-    const newStudentOfficeHourDocument: StudentOfficeHourList = { email: email, officeHourId: newofficeHourIDs };
+    const newStudentOfficeHourDocument: StudentOfficeHourList = {
+        email: email,
+        officeHourId: newofficeHourIDs,
+    };
     const update = { $set: newStudentOfficeHourDocument };
 
     await studentOfficeHourCollection.updateOne(filter, update);
