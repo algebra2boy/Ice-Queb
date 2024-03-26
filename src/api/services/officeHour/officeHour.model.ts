@@ -1,0 +1,26 @@
+export type OfficeHourId = string;
+
+export interface StudentOfficeHourList {
+    email: string;
+    officeHourId: [OfficeHourId];
+}
+
+export interface OfficeHour {
+    id: OfficeHourId;
+    facultyName: string;
+    day: number;
+    startDate: string;
+    endDate: string;
+    startTime: string;
+    endTime: string;
+    courseDepartment: string;
+    courseNumber: string;
+}
+
+export interface OfficeHourSearchingArguments {
+    facultyName?: string;
+    courseDepartment?: string;
+    courseNumber?: string;
+}
+
+export type OfficeHourPayload = Omit<OfficeHour, 'id'>;
