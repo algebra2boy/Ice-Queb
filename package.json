@@ -45,6 +45,7 @@
     "http-status": "^1.7.3",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
+    "mongoose": "^8.2.2",
     "socket.io": "^4.7.4",
     "winston": "^3.11.0",
     "zod": "^3.22.4"
