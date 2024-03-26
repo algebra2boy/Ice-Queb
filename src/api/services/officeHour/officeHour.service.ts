@@ -86,19 +86,28 @@ async function addOfficeHourToStudentList(officeHourId: string, email: string) {
 async function removeOfficeHourFromStudentList(officeHourID: string, email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
         MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
-    const officeHourIDs = await getOfficeHourIDByEmail(studentOfficeHourCollection, email);
-
-    let newOfficeHourList: string[] = [];
-    if (officeHourIDs !== undefined) {
-        newOfficeHourList = officeHourIDs.filter((id: OfficeHourId) => id !== officeHourID);
-    }
-
-    console.log(newOfficeHourList);
-
-    await studentOfficeHourCollection.updateOne(
-        { email: email },
-        { $set: { email, officeHour: newOfficeHourList as [string] } },
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
+        DatabaseCollection.OfficeHour,
     );
+
+    await checkOfficeHourIDExistence(officeHourCollection, officeHourID);
+
+    const officeHourIDs: string[] = await getOfficeHourIDByEmail(
+        studentOfficeHourCollection,
+        email,
+    );
+    const newofficeHourIDs: string[] = officeHourIDs.filter(
+        (id: OfficeHourId) => id !== officeHourID,
+    );
+
+    const filter = { email: email };
+    const newStudentOfficeHourDocument: StudentOfficeHourList = {
+        email: email,
+        officeHourId: newofficeHourIDs,
+    };
+    const update = { $set: newStudentOfficeHourDocument };
+
+    await studentOfficeHourCollection.updateOne(filter, update);
 
     return { status: 'success' };
 }
