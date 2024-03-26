@@ -22,7 +22,7 @@ export const ErrorMessages = {
 
     // Rate Limiter error messages
     RATE_LIMITER_AUTH:
-        'Too many requests to the auth service from this IP, please try again after 5 minutes',
+        'Too many requests to the auth service from this IP, please try again after 2 minutes',
     RATE_LIMITER_OFFICE_HOUR:
         'Too many requests to the office hour service from this IP, please try again after 10 minutes',
 };

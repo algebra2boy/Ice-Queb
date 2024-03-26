@@ -7,8 +7,8 @@ import { ErrorMessages as error } from '../configs/errorsMessage.config.js';
  * 429 (Too Many Requests) status code is returned when the limit is exceeded
  */
 export const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 5 minutes
-    max: 20, // limit each IP to 20 requests per windowMs
+    windowMs: 15 * 60 * 1000, // 2 minutes
+    max: 10, // limit each IP to 10 requests per windowMs
     message: error.RATE_LIMITER_AUTH,
 });
 
