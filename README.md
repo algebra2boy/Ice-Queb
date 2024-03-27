@@ -36,3 +36,11 @@ describe("the name of the test bundle", () => {
 });
 
 ```
+
+## Docker
+* Navigate to the root directory of the project and run `sudo docker built -t icequeb:latest .`
+* Check image if created by `sudo docker images`
+* Start the container by `sudo docker run -d -p 8080:8080 icequeb:latest`
+* Check the container is up `sudo docker ps`
+* Check log `sudo docker logs CONTAINERID`
+* Go into the container `sudo docker exec -it CONTAINERID /bin/bash`
