@@ -10,7 +10,6 @@ import {
     OfficeHour,
     OfficeHourId,
     OfficeHourPayload,
-    OfficeHourSearchingArguments,
 } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
@@ -55,17 +54,14 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
         : ['', ''];
 
     // eliminate the empty searching arguments (the ones that the user left empty with)
-    const searchArguments = defineSearchArguments(facultyName, courseDepartment, courseNumber);
+    const searchQuery = defineSearchQuery(facultyName, courseDepartment, courseNumber);
+    const searchProjection = { projection: { _id: 0 } };
 
-    const searchResult = await officeHourCollection.find(searchArguments).toArray();
-
-    if (!searchArguments) {
-        throw new HttpError(status.NOT_FOUND, error.OFFICE_HOUR_NOT_FOUND);
-    }
+    const searchResult = await officeHourCollection.find(searchQuery, searchProjection).toArray();
 
     return {
-        status: 'success',
         searchResult,
+        status: 'success',
     };
 }
 
@@ -206,22 +202,20 @@ function returnAddOfficeHourResult(
     }
 }
 
-function defineSearchArguments(
-    facultyName: string,
-    courseDepartment: string,
-    courseNumber: string,
-) {
-    const searchArguments: OfficeHourSearchingArguments = {};
-    if (facultyName) {
-        searchArguments.facultyName = facultyName;
-    }
-    if (courseDepartment) {
-        searchArguments.courseDepartment = courseDepartment;
-    }
-    if (courseNumber) {
-        searchArguments.courseNumber = courseNumber;
-    }
-    return searchArguments;
+function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
+    return {
+        $or: [
+            {
+                facultyName: new RegExp('.*' + facultyName + '.*', 'i'),
+            },
+            {
+                courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i'),
+            },
+            {
+                courseNumber: new RegExp('.*' + courseNumber + '.*', 'i'),
+            },
+        ],
+    };
 }
 
 export {
