@@ -30,7 +30,11 @@ async function getAllOfficeHourByStudentEmail(email: string) {
     );
 
     // find document whose id contains any office hour id from officeHourIDs
-    const officeHoursCursor = officeHourCollection.find({ id: { $in: officeHourIDs } });
+    // add projection to exclude _id field
+    const officeHoursCursor = officeHourCollection.find(
+        { id: { $in: officeHourIDs } },
+        { projection: { _id: 0 } },
+    );
     const officeHours: OfficeHour[] = await officeHoursCursor.toArray();
 
     return {
