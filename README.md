@@ -44,3 +44,7 @@ describe("the name of the test bundle", () => {
 * Check the container is up `sudo docker ps`
 * Check log `sudo docker logs CONTAINERID`
 * Go into the container `sudo docker exec -it CONTAINERID /bin/bash`
+
+
+## HTTPS certification generation
+`openssl req -nodes -new -x509 -keyout server.key -out server.cert`
