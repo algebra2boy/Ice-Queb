@@ -3,7 +3,6 @@ import status from 'http-status';
 import { v4 as uuidv4 } from 'uuid';
 
 import { MongoDB } from '../../configs/database.config.js';
-import { DatabaseCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import {
     StudentOfficeHourList,
