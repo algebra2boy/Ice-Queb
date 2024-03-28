@@ -4,8 +4,8 @@ import * as https from 'https';
 import * as fs from 'fs';
 
 const PORT = process.env.PORT || 3000;
-const SSL_CERT_PATH = process.env.SSL_CERT_PATH || 'server.cert';
-const SSL_KEY_PATH = process.env.SSL_KEY_PATH || 'server.key';
+const SSL_CERT_PATH = process.env.SSL_CERT_PATH || 'localhost.crt';
+const SSL_KEY_PATH = process.env.SSL_KEY_PATH || 'localhost.key';
 
 const privateKey = fs.readFileSync(SSL_KEY_PATH, 'utf8');
 const certificate = fs.readFileSync(SSL_CERT_PATH, 'utf8');
