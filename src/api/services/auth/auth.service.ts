@@ -3,16 +3,13 @@ import status from 'http-status';
 import bcrypt from 'bcrypt';
 
 import { MongoDB } from '../../configs/database.config.js';
-import { DatabaseCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import { User, RegisterUser } from './auth.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { generateToken } from '../../utils/token.util.js';
 
 async function login(payload: User): Promise<RegisterUser> {
-    const accountCollection: Collection<User> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.Account,
-    );
+    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
 
     const user = await findUserByEmail(accountCollection, payload.email);
 
@@ -34,9 +31,7 @@ async function login(payload: User): Promise<RegisterUser> {
 }
 
 async function signup(payload: User): Promise<RegisterUser> {
-    const accountCollection: Collection<User> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.Account,
-    );
+    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
 
     const existingUser = await findUserByEmail(accountCollection, payload.email);
 

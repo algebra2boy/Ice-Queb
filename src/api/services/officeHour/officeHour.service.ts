@@ -3,7 +3,6 @@ import status from 'http-status';
 import { v4 as uuidv4 } from 'uuid';
 
 import { MongoDB } from '../../configs/database.config.js';
-import { DatabaseCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import {
     StudentOfficeHourList,
@@ -16,7 +15,7 @@ import { departmentTranslation } from '../../utils/departmentTranslation.util.js
 
 async function getAllOfficeHourByStudentEmail(email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
-        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
+        MongoDB.getStudentOHCollection();
 
     // get office hour ID that belongs to student
     const officeHourIDs: string[] = await getOfficeHourIDByEmail(
@@ -24,9 +23,7 @@ async function getAllOfficeHourByStudentEmail(email: string) {
         email,
     );
 
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     // find document whose id contains any office hour id from officeHourIDs
     // add projection to exclude _id field
@@ -44,9 +41,7 @@ async function getAllOfficeHourByStudentEmail(email: string) {
 }
 
 async function searchOfficeHour(facultyName: string, courseName: string) {
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     // split courseName into courseDepartment and courseNumber
     const [, courseDepartment, courseNumber] = courseName
@@ -67,10 +62,8 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
 
 async function addOfficeHourToStudentList(officeHourId: string, email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
-        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+        MongoDB.getStudentOHCollection();
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     await checkOfficeHourIDExistence(officeHourCollection, officeHourId);
 
@@ -85,10 +78,8 @@ async function addOfficeHourToStudentList(officeHourId: string, email: string) {
 
 async function removeOfficeHourFromStudentList(officeHourID: string, email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
-        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+        MongoDB.getStudentOHCollection();
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     await checkOfficeHourIDExistence(officeHourCollection, officeHourID);
 
@@ -113,9 +104,7 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
 }
 
 async function uploadOfficeHour(payload: OfficeHourPayload) {
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     const payloadWithAbbreviatedCourseDepartment = {
         ...payload,

@@ -50,6 +50,7 @@
     "http-status": "^1.7.3",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
+    "mongoose": "^8.2.2",
     "socket.io": "^4.7.4",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
