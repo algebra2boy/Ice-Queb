@@ -2,6 +2,7 @@ import app from '../../api/app.js';
 import request from 'supertest';
 import server from '../../api/server.js';
 import { MongoDB } from '../../api/configs/database.config.js';
+import { OfficeHour } from '../../api/services/officeHour/officeHour.model.js';
 
 describe('office hour service search OH routes', () => {
     beforeAll(async () => {
@@ -46,34 +47,43 @@ describe('office hour service search OH routes', () => {
         },
     ];
 
-    // beforeAll(async () => {
-    //     for (const payload in uploadingOHPayloads) {
-    //         await request(app).post('/api/officeHour/upload').send(payload);
-    //     }
-    // });
+    async function uploadOH(): Promise<OfficeHour[]> {
+        const responses = [];
+        for (const payload of uploadingOHPayloads) {
+            const response = await request(app).post('/api/officeHour/upload').send(payload);
+            responses.push(response);
+        }
+
+        const uploadedOH = [];
+        for (const response of responses) {
+            uploadedOH.push(response.body.officeHourToUpload);
+        }
+
+        return uploadedOH;
+    }
 
     describe('successful request', () => {
         it('searches the correct office hour when student inserts both faculty name and course name', async () => {
-            for (const payload of uploadingOHPayloads) {
-                await request(app).post('/api/officeHour/upload').send(payload);
-            }
+            const uploadedOH = await uploadOH();
 
             const facultyName = 'Yongye';
             const courseName = 'PLPATH220';
-            const response = await request(app).get(`api/officeHour/search?facultyName=${facultyName}&courseName=${courseName}`);
 
-            expect(response).toBe(200);
+            const response = await request(app).get(
+                `/api/officeHour/search?facultyName=${facultyName}&courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
 
             expect(response.body).toHaveProperty('searchResult');
-            
+
             expect(Array.isArray(response.body.searchResult)).toBe(true);
             expect(response.body.searchResult).toHaveLength(1);
-            expect(response.body.searchResult).toStrictEqual(uploadingOHPayloads[0]);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
 
             expect(response.body).toHaveProperty('status');
             expect(typeof response.body.status).toBe('string');
             expect(response.body.status).toBe('success');
-        })
-
-    })
+        });
+    });
 });
