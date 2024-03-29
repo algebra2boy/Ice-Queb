@@ -26,7 +26,7 @@ describe('office hour service get OH routes', () => {
         const uploadOHResponse = await request(app).post('/api/officeHour/upload').send(payload);
 
         const OH_ID: string = uploadOHResponse.body.officeHourToUpload.id;
-
+        
         return [token, OH_ID, uploadOHResponse.body.officeHourToUpload];
     }
 
@@ -68,7 +68,7 @@ describe('office hour service get OH routes', () => {
             expect(response.body.officeHours[0]).toStrictEqual(OfficeHour);
 
             expect(response.body).toHaveProperty('status');
-            expect(typeof response.body.email).toBe('string');
+            expect(typeof response.body.status).toBe('string');
             expect(response.body.status).toBe('success');
         });
     });
