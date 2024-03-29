@@ -135,7 +135,10 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
         ...payloadWithAbbreviatedCourseDepartment,
     };
 
-    await officeHourCollection.insertOne(officeHourToUpload);
+    // create a new copy of officeHourToUpload 
+    // because insertOne will automatically add _id field to the object
+    // therefore we need to create a new object to avoid modifying the original object
+    await officeHourCollection.insertOne({ ...officeHourToUpload });
 
     return {
         officeHourToUpload,
