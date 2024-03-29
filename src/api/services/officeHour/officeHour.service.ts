@@ -50,6 +50,14 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
 
     // eliminate the empty searching arguments (the ones that the user left empty with)
     const searchQuery = defineSearchQuery(facultyName, courseDepartment, courseNumber);
+
+    if (searchQuery.$and.length === 0) {
+        return {
+            searchResult: [],
+            status: 'success',
+        };
+    }
+
     const searchProjection = { projection: { _id: 0 } };
 
     const searchResult = await officeHourCollection.find(searchQuery, searchProjection).toArray();

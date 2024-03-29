@@ -45,6 +45,16 @@ describe('office hour service search OH routes', () => {
             courseDepartment: 'Computer Science',
             courseNumber: '520',
         },
+        {
+            facultyName: 'CS George',
+            startDate: '2022-02-02',
+            endDate: '2022-02-03',
+            day: 2,
+            startTime: '12:00',
+            endTime: '13:00',
+            courseDepartment: 'Computer Science',
+            courseNumber: '520',
+        },
     ];
 
     async function uploadOH(): Promise<OfficeHour[]> {
@@ -96,6 +106,7 @@ describe('office hour service search OH routes', () => {
                 `/api/officeHour/search?facultyName=${facultyName}`,
             );
 
+
             expect(response.statusCode).toBe(200);
 
             expect(response.body).toHaveProperty('searchResult');
@@ -103,6 +114,169 @@ describe('office hour service search OH routes', () => {
             expect(Array.isArray(response.body.searchResult)).toBe(true);
             expect(response.body.searchResult).toHaveLength(1);
             expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches the correct office hour when student inserts faculty name and course name containing only course department', async () => {
+            const facultyName = 'Yongye';
+            const courseName = '220';
+
+            const response = await request(app).get(
+                `/api/officeHour/search?facultyName=${facultyName}&courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(1);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches the correct office hour when student inserts faculty name and course name containing only course number', async () => {
+            const facultyName = 'Yongye';
+            const courseName = '220';
+
+            const response = await request(app).get(
+                `/api/officeHour/search?facultyName=${facultyName}&courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(1);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches the correct office hour when student inserts only course name', async () => {
+            const courseName = 'PLPATH220';
+
+            const response = await request(app).get(
+                `/api/officeHour/search?courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(1);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches the correct office hour when student inserts course name containing only course department', async () => {
+            const courseName = 'PLPATH';
+
+            const response = await request(app).get(
+                `/api/officeHour/search?courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(1);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches the correct office hour when student inserts course name containing only course number', async () => {
+            const courseName = '220';
+
+            const response = await request(app).get(
+                `/api/officeHour/search?courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(1);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('returns empty array when user insert empty query', async () => {
+            const response = await request(app).get(
+                `/api/officeHour/search?`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(0);
+            expect(response.body.searchResult).toStrictEqual([]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches all of the correct office hour that match the query', async () => {
+            const courseName = '520';
+
+            const response = await request(app).get(
+                `/api/officeHour/search?courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(2);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[2]);
+            expect(response.body.searchResult[1]).toStrictEqual(uploadedOH[3]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches all of the correct office hour that contain the query', async () => {
+            const facultyName = "George"
+
+            const response = await request(app).get(
+                `/api/officeHour/search?facultyName=${facultyName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(3);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[1]);
+            expect(response.body.searchResult[1]).toStrictEqual(uploadedOH[2]);
+            expect(response.body.searchResult[2]).toStrictEqual(uploadedOH[3]);
 
             expect(response.body).toHaveProperty('status');
             expect(typeof response.body.status).toBe('string');
