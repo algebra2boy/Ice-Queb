@@ -63,14 +63,37 @@ describe('office hour service search OH routes', () => {
     }
 
     describe('successful request', () => {
-        it('searches the correct office hour when student inserts both faculty name and course name', async () => {
-            const uploadedOH = await uploadOH();
+        let uploadedOH: any;
+        beforeAll(async () => {
+            uploadedOH = await uploadOH();
+        })
 
+        it('searches the correct office hour when student inserts both faculty name and course name', async () => {
             const facultyName = 'Yongye';
             const courseName = 'PLPATH220';
 
             const response = await request(app).get(
                 `/api/officeHour/search?facultyName=${facultyName}&courseName=${courseName}`,
+            );
+
+            expect(response.statusCode).toBe(200);
+
+            expect(response.body).toHaveProperty('searchResult');
+
+            expect(Array.isArray(response.body.searchResult)).toBe(true);
+            expect(response.body.searchResult).toHaveLength(1);
+            expect(response.body.searchResult[0]).toStrictEqual(uploadedOH[0]);
+
+            expect(response.body).toHaveProperty('status');
+            expect(typeof response.body.status).toBe('string');
+            expect(response.body.status).toBe('success');
+        });
+
+        it('searches the correct office hour when student inserts only faculty name', async () => {
+            const facultyName = 'Yongye';
+
+            const response = await request(app).get(
+                `/api/officeHour/search?facultyName=${facultyName}`,
             );
 
             expect(response.statusCode).toBe(200);

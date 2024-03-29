@@ -195,19 +195,20 @@ function returnAddOfficeHourResult(
 }
 
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
+    const searchParams = [];
+    if (facultyName) {
+        searchParams.push({facultyName: new RegExp('.*' + facultyName + '.*', 'i')});
+    }
+    if (courseDepartment) {
+        searchParams.push({courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i')});
+    }
+    if (courseNumber) {
+        searchParams.push({courseNumber: new RegExp('.*' + courseNumber + '.*', 'i')});
+    }
+    
     return {
-        $or: [
-            {
-                facultyName: new RegExp('.*' + facultyName + '.*', 'i'),
-            },
-            {
-                courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i'),
-            },
-            {
-                courseNumber: new RegExp('.*' + courseNumber + '.*', 'i'),
-            },
-        ],
-    };
+        $and: searchParams
+    }
 }
 
 export {
