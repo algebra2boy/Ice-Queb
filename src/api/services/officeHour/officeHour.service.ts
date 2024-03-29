@@ -9,7 +9,6 @@ import {
     OfficeHour,
     OfficeHourId,
     OfficeHourPayload,
-    OfficeHourSearchingArguments,
 } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
@@ -27,7 +26,11 @@ async function getAllOfficeHourByStudentEmail(email: string) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     // find document whose id contains any office hour id from officeHourIDs
-    const officeHoursCursor = officeHourCollection.find({ id: { $in: officeHourIDs } });
+    // add projection to exclude _id field
+    const officeHoursCursor = officeHourCollection.find(
+        { id: { $in: officeHourIDs } },
+        { projection: { _id: 0 } },
+    );
     const officeHours: OfficeHour[] = await officeHoursCursor.toArray();
 
     return {
@@ -46,17 +49,14 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
         : ['', ''];
 
     // eliminate the empty searching arguments (the ones that the user left empty with)
-    const searchArguments = defineSearchArguments(facultyName, courseDepartment, courseNumber);
+    const searchQuery = defineSearchQuery(facultyName, courseDepartment, courseNumber);
+    const searchProjection = { projection: { _id: 0 } };
 
-    const searchResult = await officeHourCollection.find(searchArguments).toArray();
-
-    if (!searchArguments) {
-        throw new HttpError(status.NOT_FOUND, error.OFFICE_HOUR_NOT_FOUND);
-    }
+    const searchResult = await officeHourCollection.find(searchQuery, searchProjection).toArray();
 
     return {
-        status: 'success',
         searchResult,
+        status: 'success',
     };
 }
 
@@ -124,7 +124,10 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
         ...payloadWithAbbreviatedCourseDepartment,
     };
 
-    await officeHourCollection.insertOne(officeHourToUpload);
+    // create a new copy of officeHourToUpload 
+    // because insertOne will automatically add _id field to the object
+    // therefore we need to create a new object to avoid modifying the original object
+    await officeHourCollection.insertOne({ ...officeHourToUpload });
 
     return {
         officeHourToUpload,
@@ -191,22 +194,20 @@ function returnAddOfficeHourResult(
     }
 }
 
-function defineSearchArguments(
-    facultyName: string,
-    courseDepartment: string,
-    courseNumber: string,
-) {
-    const searchArguments: OfficeHourSearchingArguments = {};
-    if (facultyName) {
-        searchArguments.facultyName = facultyName;
-    }
-    if (courseDepartment) {
-        searchArguments.courseDepartment = courseDepartment;
-    }
-    if (courseNumber) {
-        searchArguments.courseNumber = courseNumber;
-    }
-    return searchArguments;
+function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
+    return {
+        $or: [
+            {
+                facultyName: new RegExp('.*' + facultyName + '.*', 'i'),
+            },
+            {
+                courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i'),
+            },
+            {
+                courseNumber: new RegExp('.*' + courseNumber + '.*', 'i'),
+            },
+        ],
+    };
 }
 
 export {
