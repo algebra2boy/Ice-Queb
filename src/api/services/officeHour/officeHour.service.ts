@@ -132,7 +132,7 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
         ...payloadWithAbbreviatedCourseDepartment,
     };
 
-    // create a new copy of officeHourToUpload 
+    // create a new copy of officeHourToUpload
     // because insertOne will automatically add _id field to the object
     // therefore we need to create a new object to avoid modifying the original object
     await officeHourCollection.insertOne({ ...officeHourToUpload });
@@ -205,18 +205,18 @@ function returnAddOfficeHourResult(
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
     const searchParams = [];
     if (facultyName) {
-        searchParams.push({facultyName: new RegExp('.*' + facultyName + '.*', 'i')});
+        searchParams.push({ facultyName: new RegExp('.*' + facultyName + '.*', 'i') });
     }
     if (courseDepartment) {
-        searchParams.push({courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i')});
+        searchParams.push({ courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i') });
     }
     if (courseNumber) {
-        searchParams.push({courseNumber: new RegExp('.*' + courseNumber + '.*', 'i')});
+        searchParams.push({ courseNumber: new RegExp('.*' + courseNumber + '.*', 'i') });
     }
-    
+
     return {
-        $and: searchParams
-    }
+        $and: searchParams,
+    };
 }
 
 export {

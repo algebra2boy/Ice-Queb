@@ -11,16 +11,18 @@ import { generateToken } from '../../utils/token.util.js';
 async function login(payload: User): Promise<RegisterUser> {
     const accountCollection: Collection<User> = MongoDB.getAccountCollection();
 
-    const user = await findUserByEmail(accountCollection, payload.email);
+    const email = payload.email.toLowerCase();
+
+    const user = await findUserByEmail(accountCollection, email);
 
     if (!user) {
-        throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(payload.email));
+        throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(email));
     }
 
     const isPasswordCorrect: boolean = await validatePassword(payload.password, user.password);
 
     if (!isPasswordCorrect) {
-        throw new HttpError(status.UNAUTHORIZED, error.USER_PASSWORD_NOT_CORRECT(payload.email));
+        throw new HttpError(status.UNAUTHORIZED, error.USER_PASSWORD_NOT_CORRECT(email));
     }
 
     return {
@@ -33,17 +35,19 @@ async function login(payload: User): Promise<RegisterUser> {
 async function signup(payload: User): Promise<RegisterUser> {
     const accountCollection: Collection<User> = MongoDB.getAccountCollection();
 
-    const existingUser = await findUserByEmail(accountCollection, payload.email);
+    const email = payload.email.toLowerCase();
+
+    const existingUser = await findUserByEmail(accountCollection, email);
 
     if (existingUser) {
-        throw new HttpError(status.FORBIDDEN, error.USER_ALREADY_EXISTS(payload.email));
+        throw new HttpError(status.FORBIDDEN, error.USER_ALREADY_EXISTS(email));
     }
 
-    await createNewUser(accountCollection, payload);
+    await createNewUser(accountCollection, { email, password: payload.password });
 
     return {
-        email: payload.email,
-        token: generateToken(payload.email),
+        email: email,
+        token: generateToken(email),
         status: 'success',
     };
 }

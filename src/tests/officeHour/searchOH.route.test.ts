@@ -76,7 +76,7 @@ describe('office hour service search OH routes', () => {
         let uploadedOH: any;
         beforeAll(async () => {
             uploadedOH = await uploadOH();
-        })
+        });
 
         it('searches the correct office hour when student inserts both faculty name and course name', async () => {
             const facultyName = 'Yongye';
@@ -105,7 +105,6 @@ describe('office hour service search OH routes', () => {
             const response = await request(app).get(
                 `/api/officeHour/search?facultyName=${facultyName}`,
             );
-
 
             expect(response.statusCode).toBe(200);
 
@@ -223,9 +222,7 @@ describe('office hour service search OH routes', () => {
         });
 
         it('returns empty array when user insert empty query', async () => {
-            const response = await request(app).get(
-                `/api/officeHour/search?`,
-            );
+            const response = await request(app).get(`/api/officeHour/search?`);
 
             expect(response.statusCode).toBe(200);
 
@@ -262,7 +259,7 @@ describe('office hour service search OH routes', () => {
         });
 
         it('searches all of the correct office hour that contain the query', async () => {
-            const facultyName = "George"
+            const facultyName = 'George';
 
             const response = await request(app).get(
                 `/api/officeHour/search?facultyName=${facultyName}`,

@@ -26,7 +26,7 @@ describe('office hour service get OH routes', () => {
         const uploadOHResponse = await request(app).post('/api/officeHour/upload').send(payload);
 
         const OH_ID: string = uploadOHResponse.body.officeHourToUpload.id;
-        
+
         return [token, OH_ID, uploadOHResponse.body.officeHourToUpload];
     }
 
