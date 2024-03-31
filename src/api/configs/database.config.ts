@@ -2,7 +2,8 @@ import { MongoClient, ServerApiVersion, Db, Collection } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { OfficeHour, StudentOfficeHourList } from '../services/officeHour/officeHour.model.js';
 import { User } from '../services/auth/auth.model.js';
-import { MongoDBName, DatabaseCollection } from './constants.config.js';
+import { Queue } from '../services/queue/queue.model.js';
+import { MongoDBName, DBCollection } from './constants.config.js';
 
 /**
  * The **MongoDB** class is a custom class that allows us for making Connections to MongoDB.
@@ -36,6 +37,9 @@ export class MongoDB {
 
     // the collection of the student office hours
     private static studentOHCollection: Collection<StudentOfficeHourList>;
+
+    // the collection of queue
+    private static queueCollection: Collection<Queue>;
 
     // this is a mock database instance that creates a copy of
     // production instance that will be discarded once all tests are executed
@@ -114,6 +118,17 @@ export class MongoDB {
     }
 
     /**
+     * This static method retrieves the Queue Collection (real time database for queueing system)
+     * @returns Queue Collection.
+     */
+    public static getQueueCollection(): Collection<Queue> {
+        if (!MongoDB.queueCollection) {
+            throw new Error('Mongo Queue Collection does not exist yet...');
+        }
+        return MongoDB.queueCollection;
+    }
+
+    /**
      * This method connects the client to the server and set up the database and collection,
      * sends a ping to confirm a succesful connection.
      */
@@ -131,11 +146,12 @@ export class MongoDB {
 
             MongoDB.iceQuebDB = MongoDB.client.db(MongoDBName);
 
-            MongoDB.accountCollection = MongoDB.iceQuebDB.collection(DatabaseCollection.Account);
-            MongoDB.OHCollection = MongoDB.iceQuebDB.collection(DatabaseCollection.OfficeHour);
+            MongoDB.accountCollection = MongoDB.iceQuebDB.collection(DBCollection.Account);
+            MongoDB.OHCollection = MongoDB.iceQuebDB.collection(DBCollection.OfficeHour);
             MongoDB.studentOHCollection = MongoDB.iceQuebDB.collection(
-                DatabaseCollection.StudentOfficeHour,
+                DBCollection.StudentOfficeHour,
             );
+            MongoDB.queueCollection = MongoDB.iceQuebDB.collection(DBCollection.Queue);
         } catch (error) {
             console.error(error);
         }

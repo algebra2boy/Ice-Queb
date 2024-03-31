@@ -1,5 +1,5 @@
 import app from './app.js';
-import { setupSocketServer } from './configs/socketServer.config.js';
+import { setupSocketServer } from './services/queue/queue.socket.js';
 import * as https from 'https';
 import * as fs from 'fs';
 
@@ -19,6 +19,6 @@ server.listen(PORT, () => {
     }
 });
 
-setupSocketServer(server);
+// setupSocketServer(server);
 
 export default server;
