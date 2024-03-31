@@ -1,5 +1,6 @@
 import app from './app.js';
 import { setupSocketServer } from './services/queue/queue.socket.js';
+import { MongoDB } from './configs/database.config.js';
 import * as https from 'https';
 import * as fs from 'fs';
 
@@ -11,6 +12,9 @@ const privateKey = fs.readFileSync(SSL_KEY_PATH, 'utf8');
 const certificate = fs.readFileSync(SSL_CERT_PATH, 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
+// here must be asynchronous, the database must be ready before the server starts
+await MongoDB.runServer();
+
 const server = https.createServer(credentials, app);
 
 server.listen(PORT, () => {
@@ -19,6 +23,6 @@ server.listen(PORT, () => {
     }
 });
 
-// setupSocketServer(server);
+setupSocketServer(server);
 
 export default server;
