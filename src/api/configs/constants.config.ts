@@ -3,5 +3,3 @@ export enum DatabaseCollection {
     OfficeHour = 'OfficeHour',
     StudentOfficeHour = 'StudentOfficeHour',
 }
-
-export const MongoDBName = 'iceQueb';
