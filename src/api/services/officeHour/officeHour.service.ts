@@ -209,13 +209,13 @@ function returnAddOfficeHourResult(
 
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
     const searchParams = [];
-    if (facultyName) {
+    if (facultyName && facultyName !== '""') {
         searchParams.push({ facultyName: new RegExp('.*' + facultyName + '.*', 'i') });
     }
-    if (courseDepartment) {
+    if (courseDepartment && courseDepartment !== '""') {
         searchParams.push({ courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i') });
     }
-    if (courseNumber) {
+    if (courseNumber && courseNumber !== '""') {
         searchParams.push({ courseNumber: new RegExp('.*' + courseNumber + '.*', 'i') });
     }
 
