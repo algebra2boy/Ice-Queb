@@ -75,12 +75,15 @@ async function validatePassword(payloadPassword: string, hashedPassword: string)
     return await bcrypt.compare(payloadPassword, hashedPassword);
 }
 
-async function createEmptyStudentOH(studentOHCollection: Collection<StudentOfficeHourList>, email: string) {
+async function createEmptyStudentOH(
+    studentOHCollection: Collection<StudentOfficeHourList>,
+    email: string,
+) {
     const emptyStudentOH: StudentOfficeHourList = {
         email: email,
         officeHourId: [],
-    }
+    };
     await studentOHCollection.insertOne(emptyStudentOH);
-};
+}
 
 export { login, signup };
