@@ -89,10 +89,14 @@ describe('office hour service delete OH route', () => {
             OH2_ID = uploadOHResponse_2.body.officeHourToUpload.id;
 
             const studentOH = MongoDB.getIceQuebDB().collection('StudentOfficeHour');
-            await studentOH.insertOne({
-                email: email,
-                officeHourId: [OH1_ID, OH2_ID],
-            });
+            await studentOH.updateOne(
+                { email: email },
+                {
+                    $set: {
+                        officeHourId: [OH1_ID, OH2_ID],
+                    },
+                },
+            );
         });
 
         it('should return 400 if the office hour id is not 36 characters long', async () => {
