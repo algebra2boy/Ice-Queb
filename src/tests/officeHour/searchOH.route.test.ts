@@ -229,8 +229,7 @@ describe('office hour service search OH routes', () => {
             expect(response.body).toHaveProperty('searchResult');
 
             expect(Array.isArray(response.body.searchResult)).toBe(true);
-            expect(response.body.searchResult).toHaveLength(0);
-            expect(response.body.searchResult).toStrictEqual([]);
+            expect(response.body.searchResult).toHaveLength(4);
 
             expect(response.body).toHaveProperty('status');
             expect(typeof response.body.status).toBe('string');

@@ -68,7 +68,7 @@ async function searchOfficeHour(facultyName: string, courseName: string, searchL
     }
 
     return {
-        facultyName,
+        searchResult,
         status: 'success',
     };
 }
@@ -209,23 +209,17 @@ function returnAddOfficeHourResult(
 
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
     const searchParams = [];
-    if (facultyName && facultyName !== '""') {
+    if (facultyName) {
         searchParams.push({ facultyName: new RegExp('.*' + facultyName + '.*', 'i') });
     }
-    if (courseDepartment && courseDepartment !== '""') {
+    if (courseDepartment) {
         searchParams.push({ courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i') });
     }
-    if (courseNumber && courseNumber !== '""') {
+    if (courseNumber) {
         searchParams.push({ courseNumber: new RegExp('.*' + courseNumber + '.*', 'i') });
     }
 
-    if (searchParams.length === 0) {
-        return {};
-    }
-
-    return {
-        $and: searchParams,
-    };
+    return searchParams.length > 0 ? { $and: searchParams } : {};
 }
 
 export {
