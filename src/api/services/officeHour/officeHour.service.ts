@@ -56,7 +56,8 @@ async function searchOfficeHour(facultyName: string, courseName: string, searchL
 
     const searchResult = await officeHourCollection.find(searchQuery, searchProjection).toArray();
 
-    if (facultyName === '""' && courseName === '""') {
+    if (facultyName === "\"\"" && courseName === "\"\"") {
+        console.log('Shuffling search result')
         const randomSearchResult: OfficeHour[] = shuffleArray(searchResult);
         return {
             searchResult:
@@ -209,13 +210,13 @@ function returnAddOfficeHourResult(
 
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
     const searchParams = [];
-    if (facultyName && facultyName !== '""') {
+    if (facultyName && facultyName !== "\"\"") {
         searchParams.push({ facultyName: new RegExp('.*' + facultyName + '.*', 'i') });
     }
-    if (courseDepartment && courseDepartment !== '""') {
+    if (courseDepartment && courseDepartment !== "\"\"") {
         searchParams.push({ courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i') });
     }
-    if (courseNumber && courseNumber !== '""') {
+    if (courseNumber && courseNumber !== "\"\"") {
         searchParams.push({ courseNumber: new RegExp('.*' + courseNumber + '.*', 'i') });
     }
 
