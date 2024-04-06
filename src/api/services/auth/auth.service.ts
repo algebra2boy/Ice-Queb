@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import { MongoDB } from '../../configs/database.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import { User, RegisterUser } from './auth.model.js';
+import { StudentOfficeHourList } from '../officeHour/officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { generateToken } from '../../utils/token.util.js';
 
@@ -34,6 +35,7 @@ async function login(payload: User): Promise<RegisterUser> {
 
 async function signup(payload: User): Promise<RegisterUser> {
     const accountCollection: Collection<User> = MongoDB.getAccountCollection();
+    const studentOHCollection: Collection<StudentOfficeHourList> = MongoDB.getStudentOHCollection();
 
     const email = payload.email.toLowerCase();
 
@@ -44,6 +46,7 @@ async function signup(payload: User): Promise<RegisterUser> {
     }
 
     await createNewUser(accountCollection, { email, password: payload.password });
+    await createEmptyStudentOH(studentOHCollection, email);
 
     return {
         email: email,
@@ -70,6 +73,17 @@ async function createNewUser(accountCollection: Collection<User>, payload: User)
 
 async function validatePassword(payloadPassword: string, hashedPassword: string): Promise<boolean> {
     return await bcrypt.compare(payloadPassword, hashedPassword);
+}
+
+async function createEmptyStudentOH(
+    studentOHCollection: Collection<StudentOfficeHourList>,
+    email: string,
+) {
+    const emptyStudentOH: StudentOfficeHourList = {
+        email: email,
+        officeHourId: [],
+    };
+    await studentOHCollection.insertOne(emptyStudentOH);
 }
 
 export { login, signup };

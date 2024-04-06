@@ -12,6 +12,7 @@ import {
 } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
+import { shuffleArray } from '../../utils/fisher-yates-shuffle.js';
 
 async function getAllOfficeHourByStudentEmail(email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
@@ -40,7 +41,7 @@ async function getAllOfficeHourByStudentEmail(email: string) {
     };
 }
 
-async function searchOfficeHour(facultyName: string, courseName: string) {
+async function searchOfficeHour(facultyName: string, courseName: string, searchLimit: number = 10) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     // split courseName into courseDepartment and courseNumber
@@ -51,16 +52,21 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
     // eliminate the empty searching arguments (the ones that the user left empty with)
     const searchQuery = defineSearchQuery(facultyName, courseDepartment, courseNumber);
 
-    if (searchQuery.$and.length === 0) {
-        return {
-            searchResult: [],
-            status: 'success',
-        };
-    }
-
     const searchProjection = { projection: { _id: 0 } };
 
     const searchResult = await officeHourCollection.find(searchQuery, searchProjection).toArray();
+
+    if (facultyName === "\"\"" && courseName === "\"\"") {
+        console.log('Shuffling search result')
+        const randomSearchResult: OfficeHour[] = shuffleArray(searchResult);
+        return {
+            searchResult:
+                randomSearchResult.length > searchLimit
+                    ? randomSearchResult.slice(0, searchLimit)
+                    : randomSearchResult,
+            status: 'success',
+        };
+    }
 
     return {
         searchResult,
@@ -204,19 +210,17 @@ function returnAddOfficeHourResult(
 
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
     const searchParams = [];
-    if (facultyName) {
+    if (facultyName && facultyName !== "\"\"") {
         searchParams.push({ facultyName: new RegExp('.*' + facultyName + '.*', 'i') });
     }
-    if (courseDepartment) {
+    if (courseDepartment && courseDepartment !== "\"\"") {
         searchParams.push({ courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i') });
     }
-    if (courseNumber) {
+    if (courseNumber && courseNumber !== "\"\"") {
         searchParams.push({ courseNumber: new RegExp('.*' + courseNumber + '.*', 'i') });
     }
 
-    return {
-        $and: searchParams,
-    };
+    return searchParams.length > 0 ? { $and: searchParams } : {};
 }
 
 export {

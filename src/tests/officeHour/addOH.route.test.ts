@@ -96,7 +96,7 @@ describe('office hour service add OH routes', () => {
 
             expect(addOHResponse.statusCode).toBe(201);
             expect(addOHResponse.body).toStrictEqual({
-                message: `A new student office hour document has been created for ${email} with the officeHourID ${OH1_ID}.`,
+                message: `The officeHourID ${OH1_ID} has been added to ${email}'s student office hour document successfully.`,
                 status: 'success',
             });
 

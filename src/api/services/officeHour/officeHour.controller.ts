@@ -18,6 +18,7 @@ export const searchOfficeHour = async (req: Request, res: Response, next: NextFu
         const officeHourList = await officeHourService.searchOfficeHour(
             req.query.facultyName as string,
             req.query.courseName as string,
+            parseInt(req.query.searchLimit as string),
         );
         res.status(status.OK).json(officeHourList);
     } catch (error) {
