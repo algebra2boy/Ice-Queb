@@ -20,3 +20,12 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
         next(error);
     }
 };
+
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await userService.resetPassword(req.body);
+        res.status(status.OK).json(user);
+    } catch (error) {
+        next(error);
+    }
+};

@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 
 import { MongoDB } from '../../configs/database.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
-import { User, RegisterUser } from './auth.model.js';
+import { User, RegisterUser, ResetUser } from './auth.model.js';
 import { StudentOfficeHourList } from '../officeHour/officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { generateToken } from '../../utils/token.util.js';
@@ -29,7 +29,7 @@ async function login(payload: User): Promise<RegisterUser> {
     return {
         email: user.email,
         token: generateToken(user.email),
-        status: 'success',
+        status: 'success'
     };
 }
 
@@ -51,9 +51,34 @@ async function signup(payload: User): Promise<RegisterUser> {
     return {
         email: email,
         token: generateToken(email),
-        status: 'success',
+        status: 'success'
     };
 }
+
+async function resetPassword(payload: ResetUser): Promise<RegisterUser> {
+    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
+    const email = payload.email.toLowerCase();
+
+    const user = await findUserByEmail(accountCollection, email);
+    if (!user) {
+        throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(email));
+    }
+
+    const isPasswordCorrect: boolean = await validatePassword(payload.oldPassword, user.password);
+    if (!isPasswordCorrect) {
+        throw new HttpError(status.UNAUTHORIZED, error.USER_PASSWORD_NOT_CORRECT(email));
+    }
+
+    const hashedNewPassword = await bcrypt.hash(payload.newPassword, 10);
+    await accountCollection.updateOne({ email: email }, { $set: { password: hashedNewPassword } });
+
+    return {
+        email: email,
+        token: generateToken(email),
+        status: 'success'
+    };
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////  HELPER FUNCTIONS FOR THE AUTH SERVICES    //////////////////
@@ -67,7 +92,7 @@ async function createNewUser(accountCollection: Collection<User>, payload: User)
 
     await accountCollection.insertOne({
         email: payload.email,
-        password: hashedPassword,
+        password: hashedPassword
     });
 }
 
@@ -77,13 +102,13 @@ async function validatePassword(payloadPassword: string, hashedPassword: string)
 
 async function createEmptyStudentOH(
     studentOHCollection: Collection<StudentOfficeHourList>,
-    email: string,
+    email: string
 ) {
     const emptyStudentOH: StudentOfficeHourList = {
         email: email,
-        officeHourId: [],
+        officeHourId: []
     };
     await studentOHCollection.insertOne(emptyStudentOH);
 }
 
-export { login, signup };
+export { login, signup, resetPassword };

@@ -8,3 +8,10 @@ export interface RegisterUser {
     token: string;
     status: string;
 }
+
+export interface ResetUser{
+    email: string;
+    token: string;
+    oldPassword: string;
+    newPassword: string;
+}
