@@ -3,7 +3,14 @@ import http from 'http';
 import { MongoDB } from '../../configs/database.config.js';
 
 export function setupSocketServer(server: http.Server): SocketIOServer {
-    const io: SocketIOServer = new SocketIOServer(server);
+    const io: SocketIOServer = new SocketIOServer(server, {
+        connectionStateRecovery: {
+            // the backup duration of the sessions and the packets
+            maxDisconnectionDuration: 2 * 60 * 1000,
+            // whether to skip middlewares upon successful recovery
+            skipMiddlewares: true,
+        },
+    });
 
     const queueCollection = MongoDB.getQueueCollection();
 
@@ -26,7 +33,19 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 const targetQueue = await findTargetQueue(officeHourID);
 
                 if (!targetQueue) {
-                    io.to(socket.id).emit('failed joining queue', 'No such queue is found');
+                    const queueCollection = MongoDB.getQueueCollection();
+                    await queueCollection.insertOne({
+                        queueId: officeHourID,
+                        studentList: [
+                            {
+                                socketId: socket.id,
+                                email: studentEmail,
+                                joinTime: new Date(),
+                                position: 0,
+                            },
+                        ],
+                    });
+                    io.to(socket.id).emit('joined queue', 0);
                     return;
                 }
 
@@ -38,12 +57,11 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     position: pplInQueue,
                 });
 
-
                 // Save the updated queue document
                 await queueCollection.updateOne(
                     { queueId: officeHourID },
                     { $set: { studentList: targetQueue.studentList } },
-                )
+                );
 
                 io.to(socket.id).emit('joined queue', pplInQueue);
             } catch (err) {
@@ -66,13 +84,22 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 );
 
                 if (targetIdx === -1) {
+                    io.to(socket.id).emit(
+                        'failed leaving queue',
+                        'Student is not found in the queue',
+                    );
                     return;
                 }
 
                 studentsInQueue.splice(targetIdx, 1);
+
+                if (studentsInQueue.length === 0) {
+                    await queueCollection.deleteOne({ queueId: officeHourID });
+                }
+
                 studentsInQueue.forEach((student, index) => {
                     student.position = index; // Adjust positions
-                    if (index > targetIdx) {
+                    if (index >= targetIdx) {
                         io.to(student.socketId).emit('update queue position', student.position);
                     }
                 });

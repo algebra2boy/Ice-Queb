@@ -73,6 +73,7 @@ describe('office hour service search OH routes', () => {
     }
 
     describe('successful request', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let uploadedOH: any;
         beforeAll(async () => {
             uploadedOH = await uploadOH();
