@@ -11,7 +11,6 @@ export interface RegisterUser {
 
 export interface ResetUser{
     email: string;
-    token: string;
     oldPassword: string;
     newPassword: string;
 }
