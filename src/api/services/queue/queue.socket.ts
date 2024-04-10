@@ -32,6 +32,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
             try {
                 const targetQueue = await findTargetQueue(officeHourID);
 
+                // Create an new queue when there is none
                 if (!targetQueue) {
                     const queueCollection = MongoDB.getQueueCollection();
                     await queueCollection.insertOne({
@@ -49,6 +50,20 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     return;
                 }
 
+                // Check if the student is already in the queue (in case he/she disconnects from the server by accident)
+                const existedStudent = targetQueue.studentList.find((student) => student.email === studentEmail);
+
+                // If the student is in the queue, update his/her socketid to "reconnect" him/her back to the server
+                if (existedStudent) {
+                    existedStudent.socketId = socket.id;
+                    await queueCollection.updateOne(
+                        { queueId: officeHourID },
+                        { $set: { studentList: targetQueue.studentList } },
+                    );
+                    return;
+                }
+
+                // Otherwise add he/she to the target queue regularly
                 const pplInQueue = targetQueue.studentList.length;
                 targetQueue.studentList.push({
                     socketId: socket.id,
@@ -93,6 +108,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
 
                 studentsInQueue.splice(targetIdx, 1);
 
+                // Remove the queue after everyone has left
                 if (studentsInQueue.length === 0) {
                     await queueCollection.deleteOne({ queueId: officeHourID });
                 }
