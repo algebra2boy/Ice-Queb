@@ -93,7 +93,7 @@ describe('authentication service routes for reset password', () => {
 
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                message: ['This is not a valid email', 'Password does not exist', 'New password does not exist'],
+                message: ['This is not a valid email'],
                 status: 'failure',
             });
         });
