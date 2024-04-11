@@ -12,6 +12,6 @@ export const resetAuthSchema = z.object({
     body: z.object({
         email: schemaLibrary.emailValidation,
         oldPassword: schemaLibrary.passwordValidation,
-        newPassword: schemaLibrary.passwordValidation
+        newPassword: schemaLibrary.newPasswordValidation
     })
 });
