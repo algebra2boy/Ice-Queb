@@ -10,7 +10,7 @@
     "dev": "nodemon src/api/server.ts",
     "format": "prettier --write src/ --config .prettierrc",
     "lint": "eslint src/ --config .eslintrc.json",
-    "test": "jest src/tests --forceExit --detectOpenHandles NODE_ENV=test "
+    "test": "node --experimental-vm-modules node_modules/.bin/jest src/tests --forceExit --detectOpenHandles"
   },
   "author": "ice-queb backend team",
   "license": "ISC",
