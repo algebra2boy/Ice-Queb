@@ -12,23 +12,14 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
         },
     });
 
-    const queueCollection = MongoDB.getQueueCollection();
-
-    // set up change steam (do we need change stream???
-    // const changeStream = queueCollection.watch();
-
-    // changeStream.on('change', change => {
-    //     console.log('Change occurred:', change);
-
-    //     // Emit the change to connected clients
-    //     io.emit('change', change); // Modify this according to your application's needs
-    // });
-
     io.on('connection', socket => {
         console.log('A client connected');
 
         socket.on('join queue', async data => {
             const { studentEmail, officeHourID } = data;
+            
+            const queueCollection = MongoDB.getQueueCollection();
+
             try {
                 const targetQueue = await findTargetQueue(officeHourID);
 
@@ -86,6 +77,9 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
 
         socket.on('leave queue', async data => {
             const { studentEmail, officeHourID } = data;
+
+            const queueCollection = MongoDB.getQueueCollection();
+
             try {
                 const targetQueue = await findTargetQueue(officeHourID);
                 if (!targetQueue) {
