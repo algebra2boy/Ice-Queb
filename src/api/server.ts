@@ -12,8 +12,7 @@ const privateKey = fs.readFileSync(SSL_KEY_PATH, 'utf8');
 const certificate = fs.readFileSync(SSL_CERT_PATH, 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
-// here must be asynchronous, the database must be ready before the server starts
-await MongoDB.runServer();
+MongoDB.runServer();
 
 const server = https.createServer(credentials, app);
 
