@@ -15,9 +15,54 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
     io.on('connection', socket => {
         console.log('A client connected');
 
+        socket.on('check existence', async data => {
+            const { studentEmail, officeHourID } = data;
+
+            const queueCollection = MongoDB.getQueueCollection();
+
+            try {
+                const targetQueue = await findTargetQueue(officeHourID);
+                // Check if the student is already in the queue (in case he/she disconnects from the server by accident)
+
+                if (targetQueue) {
+                    const existedStudent = targetQueue.studentList.find(
+                        student => student.email === studentEmail,
+                    );
+
+                    // If the student is in the queue, update his/her socketid to "reconnect" him/her back to the server
+                    if (existedStudent) {
+                        existedStudent.socketId = socket.id;
+                        await queueCollection.updateOne(
+                            { queueId: officeHourID },
+                            { $set: { studentList: targetQueue.studentList } },
+                        );
+                        socket.emit('check existence response', {
+                            status: 'success',
+                            data: true,
+                            error: null,
+                        });
+                    } else {
+                        socket.emit('check existence response', {
+                            status: 'success',
+                            data: false,
+                            error: null,
+                        });
+                    }
+                } else {
+                    socket.emit('check existence response', {
+                        status: 'failure',
+                        data: null,
+                        error: 'Queue does not exist',
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
         socket.on('join queue', async data => {
             const { studentEmail, officeHourID } = data;
-            
+
             const queueCollection = MongoDB.getQueueCollection();
 
             try {
@@ -37,12 +82,18 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                             },
                         ],
                     });
-                    io.to(socket.id).emit('joined queue', 0);
+                    io.to(socket.id).emit('join queue response', {
+                        status: 'success',
+                        data: 0,
+                        error: null,
+                    });
                     return;
                 }
 
                 // Check if the student is already in the queue (in case he/she disconnects from the server by accident)
-                const existedStudent = targetQueue.studentList.find((student) => student.email === studentEmail);
+                const existedStudent = targetQueue.studentList.find(
+                    student => student.email === studentEmail,
+                );
 
                 // If the student is in the queue, update his/her socketid to "reconnect" him/her back to the server
                 if (existedStudent) {
@@ -69,7 +120,11 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     { $set: { studentList: targetQueue.studentList } },
                 );
 
-                io.to(socket.id).emit('joined queue', pplInQueue);
+                io.to(socket.id).emit('join queue response', {
+                    status: 'success',
+                    data: pplInQueue,
+                    error: null,
+                });
             } catch (err) {
                 console.error(err);
             }
@@ -83,7 +138,11 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
             try {
                 const targetQueue = await findTargetQueue(officeHourID);
                 if (!targetQueue) {
-                    io.to(socket.id).emit('failed leaving queue', 'No such queue is found');
+                    io.to(socket.id).emit('leave queue response', {
+                        status: 'failure',
+                        data: null,
+                        error: 'No such queue is found',
+                    });
                     return;
                 }
 
@@ -93,10 +152,11 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 );
 
                 if (targetIdx === -1) {
-                    io.to(socket.id).emit(
-                        'failed leaving queue',
-                        'Student is not found in the queue',
-                    );
+                    io.to(socket.id).emit('leave queue response', {
+                        status: 'failure',
+                        data: null,
+                        error: 'Student is not found in the queue',
+                    });
                     return;
                 }
 
@@ -110,7 +170,11 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 studentsInQueue.forEach((student, index) => {
                     student.position = index; // Adjust positions
                     if (index >= targetIdx) {
-                        io.to(student.socketId).emit('update queue position', student.position);
+                        io.to(student.socketId).emit('leave queue response', {
+                            status: 'success',
+                            data: student.position,
+                            error: null,
+                        });
                     }
                 });
 
