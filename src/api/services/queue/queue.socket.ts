@@ -38,20 +38,20 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                         );
                         socket.emit('check existence response', {
                             status: 'success',
-                            data: true,
+                            data: {isInQueue: true, position: existedStudent.position},
                             error: null,
                         });
                     } else {
                         socket.emit('check existence response', {
                             status: 'success',
-                            data: false,
+                            data: { isInQueue: false, position: targetQueue.studentList.length},
                             error: null,
                         });
                     }
                 } else {
                     socket.emit('check existence response', {
-                        status: 'failure',
-                        data: null,
+                        status: 'success',
+                        data: { isInQueue: false, position: 0 },
                         error: 'Queue does not exist',
                     });
                 }
@@ -71,6 +71,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 // Create an new queue when there is none
                 if (!targetQueue) {
                     const queueCollection = MongoDB.getQueueCollection();
+                    
                     await queueCollection.insertOne({
                         queueId: officeHourID,
                         studentList: [
@@ -90,22 +91,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     return;
                 }
 
-                // Check if the student is already in the queue (in case he/she disconnects from the server by accident)
-                const existedStudent = targetQueue.studentList.find(
-                    student => student.email === studentEmail,
-                );
-
-                // If the student is in the queue, update his/her socketid to "reconnect" him/her back to the server
-                if (existedStudent) {
-                    existedStudent.socketId = socket.id;
-                    await queueCollection.updateOne(
-                        { queueId: officeHourID },
-                        { $set: { studentList: targetQueue.studentList } },
-                    );
-                    return;
-                }
-
-                // Otherwise add he/she to the target queue regularly
+                // Add student to the queue
                 const pplInQueue = targetQueue.studentList.length;
                 targetQueue.studentList.push({
                     socketId: socket.id,
