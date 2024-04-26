@@ -38,13 +38,13 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                         );
                         socket.emit('check existence response', {
                             status: 'success',
-                            data: {isInQueue: true, position: existedStudent.position},
+                            data: { isInQueue: true, position: existedStudent.position },
                             error: null,
                         });
                     } else {
                         socket.emit('check existence response', {
                             status: 'success',
-                            data: { isInQueue: false, position: targetQueue.studentList.length},
+                            data: { isInQueue: false, position: targetQueue.studentList.length },
                             error: null,
                         });
                     }
@@ -71,7 +71,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 // Create an new queue when there is none
                 if (!targetQueue) {
                     const queueCollection = MongoDB.getQueueCollection();
-                    
+
                     await queueCollection.insertOne({
                         queueId: officeHourID,
                         studentList: [
@@ -151,6 +151,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                 // Remove the queue after everyone has left
                 if (studentsInQueue.length === 0) {
                     await queueCollection.deleteOne({ queueId: officeHourID });
+                    return;
                 }
 
                 studentsInQueue.forEach((student, index) => {
