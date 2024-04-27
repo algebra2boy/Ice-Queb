@@ -159,7 +159,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
 
                 // emit to front end about new queue state
                 studentsInQueue.forEach(student => {
-                    io.to(student.socketId).emit('queue update', {
+                    io.to(student.socketId).emit('update queue positions', {
                         status: 'updated',
                         data: student.position,
                         error: null
