@@ -8,8 +8,8 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
             // the backup duration of the sessions and the packets
             maxDisconnectionDuration: 2 * 60 * 1000,
             // whether to skip middlewares upon successful recovery
-            skipMiddlewares: true,
-        },
+            skipMiddlewares: true
+        }
     });
 
     io.on('connection', socket => {
@@ -26,7 +26,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
 
                 if (targetQueue) {
                     const existedStudent = targetQueue.studentList.find(
-                        student => student.email === studentEmail,
+                        student => student.email === studentEmail
                     );
 
                     // If the student is in the queue, update his/her socketid to "reconnect" him/her back to the server
@@ -34,25 +34,25 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                         existedStudent.socketId = socket.id;
                         await queueCollection.updateOne(
                             { queueId: officeHourID },
-                            { $set: { studentList: targetQueue.studentList } },
+                            { $set: { studentList: targetQueue.studentList } }
                         );
                         socket.emit('check existence response', {
                             status: 'success',
                             data: { isInQueue: true, position: existedStudent.position },
-                            error: null,
+                            error: null
                         });
                     } else {
                         socket.emit('check existence response', {
                             status: 'success',
                             data: { isInQueue: false, position: targetQueue.studentList.length },
-                            error: null,
+                            error: null
                         });
                     }
                 } else {
                     socket.emit('check existence response', {
                         status: 'success',
                         data: { isInQueue: false, position: 0 },
-                        error: 'Queue does not exist',
+                        error: 'Queue does not exist'
                     });
                 }
             } catch (err) {
@@ -79,14 +79,14 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                                 socketId: socket.id,
                                 email: studentEmail,
                                 joinTime: new Date(),
-                                position: 0,
-                            },
-                        ],
+                                position: 0
+                            }
+                        ]
                     });
                     io.to(socket.id).emit('join queue response', {
                         status: 'success',
                         data: 0,
-                        error: null,
+                        error: null
                     });
                     return;
                 }
@@ -97,19 +97,19 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     socketId: socket.id,
                     email: studentEmail,
                     joinTime: new Date(),
-                    position: pplInQueue,
+                    position: pplInQueue
                 });
 
                 // Save the updated queue document
                 await queueCollection.updateOne(
                     { queueId: officeHourID },
-                    { $set: { studentList: targetQueue.studentList } },
+                    { $set: { studentList: targetQueue.studentList } }
                 );
 
                 io.to(socket.id).emit('join queue response', {
                     status: 'success',
                     data: pplInQueue,
-                    error: null,
+                    error: null
                 });
             } catch (err) {
                 console.error(err);
@@ -127,52 +127,61 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     io.to(socket.id).emit('leave queue response', {
                         status: 'failure',
                         data: null,
-                        error: 'No such queue is found',
+                        error: 'No such queue is found'
                     });
                     return;
                 }
 
                 const studentsInQueue = targetQueue.studentList;
                 const targetIdx = studentsInQueue.findIndex(
-                    student => student.email === studentEmail,
+                    student => student.email === studentEmail
                 );
 
                 if (targetIdx === -1) {
                     io.to(socket.id).emit('leave queue response', {
                         status: 'failure',
                         data: null,
-                        error: 'Student is not found in the queue',
+                        error: 'Student is not found in the queue'
                     });
                     return;
                 }
 
                 studentsInQueue.splice(targetIdx, 1);
 
-                // Remove the queue after everyone has left
-                if (studentsInQueue.length === 0) {
-                    await queueCollection.deleteOne({ queueId: officeHourID });
-                    return;
-                }
-
                 studentsInQueue.forEach((student, index) => {
                     student.position = index; // Adjust positions
-                    if (index >= targetIdx) {
-                        io.to(student.socketId).emit('leave queue response', {
-                            status: 'success',
-                            data: student.position,
-                            error: null,
-                        });
-                    }
                 });
 
                 await queueCollection.updateOne(
                     { queueId: officeHourID },
-                    { $set: { studentList: studentsInQueue } },
+                    { $set: { studentList: studentsInQueue } }
                 );
+
+                // emit to front end about new queue state
+                studentsInQueue.forEach(student => {
+                    io.to(student.socketId).emit('queue update', {
+                        status: 'updated',
+                        data: student.position,
+                        error: null
+                    });
+                });
+
+                // send response for call back function in the front end
+                io.to(socket.id).emit('leave queue response', {
+                    status: 'success',
+                    data: studentsInQueue.length,   // after student left, all they need to know is the current queue length, not the position
+                    error: null
+                });
+
+                // clean up the queue if it's empty
+                if (studentsInQueue.length === 0) {
+                    await queueCollection.deleteOne({ queueId: officeHourID });
+                }
             } catch (err) {
                 console.error(err);
             }
         });
+
     });
 
     return io;
