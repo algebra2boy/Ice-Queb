@@ -163,18 +163,22 @@ async function editOfficeHour(payload: OfficeHour) {
     const officeHourDocument = await officeHourCollection.findOne({ id: payload.id });
 
     if (!officeHourDocument) {
-        throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_NOT_FOUND);
+
+        const { id, ...officeHour } = payload;
+        await uploadOfficeHour(officeHour)
+    } else {
+
+        await officeHourCollection.updateOne(
+            { id: officeHourDocument.id },
+            { $set: payloadWithAbbreviatedCourseDepartment },
+        );
+
+        return {
+            officeHourToEdit: payloadWithAbbreviatedCourseDepartment,
+            status: 'success',
+        };
     }
 
-    await officeHourCollection.updateOne(
-        { id: officeHourDocument.id },
-        { $set: payloadWithAbbreviatedCourseDepartment },
-    );
-
-    return {
-        officeHourToEdit: payloadWithAbbreviatedCourseDepartment,
-        status: 'success',
-    };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
