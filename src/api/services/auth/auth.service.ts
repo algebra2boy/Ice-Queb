@@ -3,27 +3,27 @@ import status from 'http-status';
 import bcrypt from 'bcrypt';
 
 import { MongoDB } from '../../configs/database.config.js';
-import { DatabaseCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
-import { User, RegisterUser } from './auth.model.js';
+import { User, RegisterUser, ResetUser } from './auth.model.js';
+import { StudentOfficeHourList } from '../officeHour/officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { generateToken } from '../../utils/token.util.js';
 
 async function login(payload: User): Promise<RegisterUser> {
-    const accountCollection: Collection<User> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.Account,
-    );
+    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
 
-    const user = await findUserByEmail(accountCollection, payload.email);
+    const email = payload.email.toLowerCase();
+
+    const user = await findUserByEmail(accountCollection, email);
 
     if (!user) {
-        throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(payload.email));
+        throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(email));
     }
 
     const isPasswordCorrect: boolean = await validatePassword(payload.password, user.password);
 
     if (!isPasswordCorrect) {
-        throw new HttpError(status.UNAUTHORIZED, error.USER_PASSWORD_NOT_CORRECT(payload.email));
+        throw new HttpError(status.UNAUTHORIZED, error.USER_PASSWORD_NOT_CORRECT(email));
     }
 
     return {
@@ -34,21 +34,47 @@ async function login(payload: User): Promise<RegisterUser> {
 }
 
 async function signup(payload: User): Promise<RegisterUser> {
-    const accountCollection: Collection<User> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.Account,
-    );
+    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
+    const studentOHCollection: Collection<StudentOfficeHourList> = MongoDB.getStudentOHCollection();
 
-    const existingUser = await findUserByEmail(accountCollection, payload.email);
+    const email = payload.email.toLowerCase();
+
+    const existingUser = await findUserByEmail(accountCollection, email);
 
     if (existingUser) {
-        throw new HttpError(status.FORBIDDEN, error.USER_ALREADY_EXISTS(payload.email));
+        throw new HttpError(status.FORBIDDEN, error.USER_ALREADY_EXISTS(email));
     }
 
-    await createNewUser(accountCollection, payload);
+    await createNewUser(accountCollection, { email, password: payload.password });
+    await createEmptyStudentOH(studentOHCollection, email);
 
     return {
-        email: payload.email,
-        token: generateToken(payload.email),
+        email: email,
+        token: generateToken(email),
+        status: 'success',
+    };
+}
+
+async function resetPassword(payload: ResetUser): Promise<RegisterUser> {
+    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
+    const email = payload.email.toLowerCase();
+
+    const user = await findUserByEmail(accountCollection, email);
+    if (!user) {
+        throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(email));
+    }
+
+    const isPasswordCorrect: boolean = await validatePassword(payload.oldPassword, user.password);
+    if (!isPasswordCorrect) {
+        throw new HttpError(status.UNAUTHORIZED, error.USER_PASSWORD_NOT_CORRECT(email));
+    }
+
+    const hashedNewPassword = await bcrypt.hash(payload.newPassword, 10);
+    await accountCollection.updateOne({ email: email }, { $set: { password: hashedNewPassword } });
+
+    return {
+        email: email,
+        token: generateToken(email),
         status: 'success',
     };
 }
@@ -73,4 +99,15 @@ async function validatePassword(payloadPassword: string, hashedPassword: string)
     return await bcrypt.compare(payloadPassword, hashedPassword);
 }
 
-export { login, signup };
+async function createEmptyStudentOH(
+    studentOHCollection: Collection<StudentOfficeHourList>,
+    email: string,
+) {
+    const emptyStudentOH: StudentOfficeHourList = {
+        email: email,
+        officeHourId: [],
+    };
+    await studentOHCollection.insertOne(emptyStudentOH);
+}
+
+export { login, signup, resetPassword };

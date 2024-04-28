@@ -3,7 +3,7 @@ import status from 'http-status';
 import { v4 as uuidv4 } from 'uuid';
 
 import { MongoDB } from '../../configs/database.config.js';
-import { DatabaseCollection } from '../../configs/constants.config.js';
+import { DBCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import {
     StudentOfficeHourList,
@@ -13,10 +13,11 @@ import {
 } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
+import { shuffleArray } from '../../utils/fisher-yates-shuffle.js';
 
 async function getAllOfficeHourByStudentEmail(email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
-        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
+        MongoDB.getStudentOHCollection();
 
     // get office hour ID that belongs to student
     const officeHourIDs: string[] = await getOfficeHourIDByEmail(
@@ -25,7 +26,7 @@ async function getAllOfficeHourByStudentEmail(email: string) {
     );
 
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
+        DBCollection.OfficeHour,
     );
 
     // find document whose id contains any office hour id from officeHourIDs
@@ -43,10 +44,8 @@ async function getAllOfficeHourByStudentEmail(email: string) {
     };
 }
 
-async function searchOfficeHour(facultyName: string, courseName: string) {
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+async function searchOfficeHour(facultyName: string, courseName: string, searchLimit: number = 10) {
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     // split courseName into courseDepartment and courseNumber
     const [, courseDepartment, courseNumber] = courseName
@@ -55,9 +54,22 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
 
     // eliminate the empty searching arguments (the ones that the user left empty with)
     const searchQuery = defineSearchQuery(facultyName, courseDepartment, courseNumber);
+
     const searchProjection = { projection: { _id: 0 } };
 
     const searchResult = await officeHourCollection.find(searchQuery, searchProjection).toArray();
+
+    if (facultyName === '""' && courseName === '""') {
+        console.log('Shuffling search result');
+        const randomSearchResult: OfficeHour[] = shuffleArray(searchResult);
+        return {
+            searchResult:
+                randomSearchResult.length > searchLimit
+                    ? randomSearchResult.slice(0, searchLimit)
+                    : randomSearchResult,
+            status: 'success',
+        };
+    }
 
     return {
         searchResult,
@@ -67,10 +79,8 @@ async function searchOfficeHour(facultyName: string, courseName: string) {
 
 async function addOfficeHourToStudentList(officeHourId: string, email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
-        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+        MongoDB.getStudentOHCollection();
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     await checkOfficeHourIDExistence(officeHourCollection, officeHourId);
 
@@ -85,10 +95,8 @@ async function addOfficeHourToStudentList(officeHourId: string, email: string) {
 
 async function removeOfficeHourFromStudentList(officeHourID: string, email: string) {
     const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
-        MongoDB.getIceQuebDB().collection(DatabaseCollection.StudentOfficeHour);
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+        MongoDB.getStudentOHCollection();
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     await checkOfficeHourIDExistence(officeHourCollection, officeHourID);
 
@@ -113,9 +121,7 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
 }
 
 async function uploadOfficeHour(payload: OfficeHourPayload) {
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
-        DatabaseCollection.OfficeHour,
-    );
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     const payloadWithAbbreviatedCourseDepartment = {
         ...payload,
@@ -135,7 +141,7 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
         ...payloadWithAbbreviatedCourseDepartment,
     };
 
-    // create a new copy of officeHourToUpload 
+    // create a new copy of officeHourToUpload
     // because insertOne will automatically add _id field to the object
     // therefore we need to create a new object to avoid modifying the original object
     await officeHourCollection.insertOne({ ...officeHourToUpload });
@@ -206,19 +212,18 @@ function returnAddOfficeHourResult(
 }
 
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
-    return {
-        $or: [
-            {
-                facultyName: new RegExp('.*' + facultyName + '.*', 'i'),
-            },
-            {
-                courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i'),
-            },
-            {
-                courseNumber: new RegExp('.*' + courseNumber + '.*', 'i'),
-            },
-        ],
-    };
+    const searchParams = [];
+    if (facultyName && facultyName !== '""') {
+        searchParams.push({ facultyName: new RegExp('.*' + facultyName + '.*', 'i') });
+    }
+    if (courseDepartment && courseDepartment !== '""') {
+        searchParams.push({ courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i') });
+    }
+    if (courseNumber && courseNumber !== '""') {
+        searchParams.push({ courseNumber: new RegExp('.*' + courseNumber + '.*', 'i') });
+    }
+
+    return searchParams.length > 0 ? { $and: searchParams } : {};
 }
 
 export {

@@ -1,5 +1,9 @@
-import { MongoClient, ServerApiVersion, Db } from 'mongodb';
+import { MongoClient, ServerApiVersion, Db, Collection } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { OfficeHour, StudentOfficeHourList } from '../services/officeHour/officeHour.model.js';
+import { Queue } from '../services/queue/queue.model.js';
+import { User } from '../services/auth/auth.model.js';
+import { MongoDBName, DBCollection } from './constants.config.js';
 
 /**
  * The **MongoDB** class is a custom class that allows us for making Connections to MongoDB.
@@ -24,6 +28,18 @@ export class MongoDB {
 
     // the database instance of the mongodb
     private static iceQuebDB: Db;
+
+    // the collection of the account
+    private static accountCollection: Collection<User>;
+
+    // the collection of the office hours
+    private static OHCollection: Collection<OfficeHour>;
+
+    // the collection of the student office hours
+    private static studentOHCollection: Collection<StudentOfficeHourList>;
+
+    // the collection of queue
+    private static queueCollection: Collection<Queue>;
 
     // this is a mock database instance that creates a copy of
     // production instance that will be discarded once all tests are executed
@@ -67,7 +83,53 @@ export class MongoDB {
     }
 
     /**
-     * This method connects the client to the server,
+     * This static method retrieves the Account Collection
+     * @returns Account Collection.
+     */
+    public static getAccountCollection(): Collection<User> {
+        if (!MongoDB.accountCollection) {
+            throw new Error('Mongo Account Collection does not exist yet...');
+        }
+        return MongoDB.accountCollection;
+    }
+
+    /**
+     * This static method retrieves the OfficeHour Collection
+     * @returns OfficeHour Collection.
+     */
+
+    public static getOHCollection(): Collection<OfficeHour> {
+        if (!MongoDB.OHCollection) {
+            throw new Error('Mongo OfficeHour Collection does not exist yet...');
+        }
+        return MongoDB.OHCollection;
+    }
+
+    /**
+     * This static method retrieves the StudentOfficeHour Collection
+     * @returns StudentOfficeHour Collection.
+     */
+
+    public static getStudentOHCollection(): Collection<StudentOfficeHourList> {
+        if (!MongoDB.studentOHCollection) {
+            throw new Error('Mongo StudentOfficeHour Collection does not exist yet...');
+        }
+        return MongoDB.studentOHCollection;
+    }
+
+    /**
+     * This static method retrieves the Queue Collection (real time database for queueing system)
+     * @returns Queue Collection.
+     */
+    public static getQueueCollection(): Collection<Queue> {
+        if (!MongoDB.queueCollection) {
+            throw new Error('Mongo Queue Collection does not exist yet...');
+        }
+        return MongoDB.queueCollection;
+    }
+
+    /**
+     * This method connects the client to the server and set up the database and collection,
      * sends a ping to confirm a succesful connection.
      */
     public static async runServer() {
@@ -82,7 +144,14 @@ export class MongoDB {
                 console.log('Pinged your deployment. You successfully connected to MongoDB!');
             }
 
-            MongoDB.iceQuebDB = MongoDB.client.db('iceQueb');
+            MongoDB.iceQuebDB = MongoDB.client.db(MongoDBName);
+
+            MongoDB.accountCollection = MongoDB.iceQuebDB.collection(DBCollection.Account);
+            MongoDB.OHCollection = MongoDB.iceQuebDB.collection(DBCollection.OfficeHour);
+            MongoDB.studentOHCollection = MongoDB.iceQuebDB.collection(
+                DBCollection.StudentOfficeHour,
+            );
+            MongoDB.queueCollection = MongoDB.iceQuebDB.collection(DBCollection.Queue);
         } catch (error) {
             console.error(error);
         }
