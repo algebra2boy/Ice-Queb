@@ -29,5 +29,6 @@ router.delete(
 
 // TEACHER ROUTE
 router.post('/upload', validate(officeHourUploadSchema), officeHourController.uploadOfficeHour);
+router.put('/edit', validate(officeHourUploadSchema), officeHourController.editOfficeHour);
 
 export default router;

@@ -58,3 +58,12 @@ export const uploadOfficeHour = async (req: Request, res: Response, next: NextFu
         next(error);
     }
 };
+
+export const editOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const uploadResult = await officeHourService.editOfficeHour(req.body);
+        res.status(status.OK).json(uploadResult);
+    } catch (error) {
+        next(error);
+    }
+};

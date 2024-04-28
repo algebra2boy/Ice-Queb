@@ -9,7 +9,7 @@ import {
     StudentOfficeHourList,
     OfficeHour,
     OfficeHourId,
-    OfficeHourPayload,
+    OfficeHourWithoutID,
 } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
@@ -120,7 +120,7 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
     return { status: 'success' };
 }
 
-async function uploadOfficeHour(payload: OfficeHourPayload) {
+async function uploadOfficeHour(payload: OfficeHourWithoutID) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
     const payloadWithAbbreviatedCourseDepartment = {
@@ -148,6 +148,31 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
 
     return {
         officeHourToUpload,
+        status: 'success',
+    };
+}
+
+async function editOfficeHour(payload: OfficeHour) {
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
+
+    const payloadWithAbbreviatedCourseDepartment = {
+        ...payload,
+        courseDepartment: departmentTranslation[payload.courseDepartment],
+    };
+
+    const officeHourDocument = await officeHourCollection.findOne({ id: payload.id });
+
+    if (!officeHourDocument) {
+        throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_NOT_FOUND);
+    }
+
+    await officeHourCollection.updateOne(
+        { id: officeHourDocument.id },
+        { $set: payloadWithAbbreviatedCourseDepartment },
+    );
+
+    return {
+        officeHourToEdit: payloadWithAbbreviatedCourseDepartment,
         status: 'success',
     };
 }
@@ -232,4 +257,5 @@ export {
     addOfficeHourToStudentList,
     removeOfficeHourFromStudentList,
     uploadOfficeHour,
+    editOfficeHour
 };
