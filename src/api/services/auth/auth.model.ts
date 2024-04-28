@@ -9,7 +9,7 @@ export interface RegisterUser {
     status: string;
 }
 
-export interface ResetUser{
+export interface ResetUser {
     email: string;
     oldPassword: string;
     newPassword: string;

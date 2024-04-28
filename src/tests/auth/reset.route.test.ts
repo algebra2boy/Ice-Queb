@@ -24,7 +24,7 @@ describe('authentication service routes for reset password', () => {
             const resetPayload = {
                 email: 'reset@umass.edu',
                 oldPassword: 'oldPassword123',
-                newPassword: 'newPassword123'
+                newPassword: 'newPassword123',
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
@@ -40,7 +40,7 @@ describe('authentication service routes for reset password', () => {
             const resetPayload = {
                 email: 'reset2@umass.edu',
                 oldPassword: 'incorrectOldPassword',
-                newPassword: 'newPassword123'
+                newPassword: 'newPassword123',
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
@@ -55,7 +55,7 @@ describe('authentication service routes for reset password', () => {
             const resetPayload = {
                 email: 'marius@marius.hell',
                 oldPassword: 'oldPassword123',
-                newPassword: 'newPassword123'
+                newPassword: 'newPassword123',
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
@@ -72,7 +72,7 @@ describe('authentication service routes for reset password', () => {
 
             const resetPayload = {
                 email: 'reset3@umass.edu',
-                oldPassword: 'oldPassword123'
+                oldPassword: 'oldPassword123',
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
@@ -87,7 +87,7 @@ describe('authentication service routes for reset password', () => {
             const resetPayload = {
                 email: 'invalidemail',
                 oldPassword: 'oldPassword123',
-                newPassword: 'newPassword123'
+                newPassword: 'newPassword123',
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 

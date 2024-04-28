@@ -3,6 +3,7 @@ import status from 'http-status';
 import { v4 as uuidv4 } from 'uuid';
 
 import { MongoDB } from '../../configs/database.config.js';
+import { DBCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import {
     StudentOfficeHourList,
@@ -24,7 +25,9 @@ async function getAllOfficeHourByStudentEmail(email: string) {
         email,
     );
 
-    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
+        DBCollection.OfficeHour,
+    );
 
     // find document whose id contains any office hour id from officeHourIDs
     // add projection to exclude _id field
@@ -56,8 +59,8 @@ async function searchOfficeHour(facultyName: string, courseName: string, searchL
 
     const searchResult = await officeHourCollection.find(searchQuery, searchProjection).toArray();
 
-    if (facultyName === "\"\"" && courseName === "\"\"") {
-        console.log('Shuffling search result')
+    if (facultyName === '""' && courseName === '""') {
+        console.log('Shuffling search result');
         const randomSearchResult: OfficeHour[] = shuffleArray(searchResult);
         return {
             searchResult:
@@ -210,13 +213,13 @@ function returnAddOfficeHourResult(
 
 function defineSearchQuery(facultyName: string, courseDepartment: string, courseNumber: string) {
     const searchParams = [];
-    if (facultyName && facultyName !== "\"\"") {
+    if (facultyName && facultyName !== '""') {
         searchParams.push({ facultyName: new RegExp('.*' + facultyName + '.*', 'i') });
     }
-    if (courseDepartment && courseDepartment !== "\"\"") {
+    if (courseDepartment && courseDepartment !== '""') {
         searchParams.push({ courseDepartment: new RegExp('.*' + courseDepartment + '.*', 'i') });
     }
-    if (courseNumber && courseNumber !== "\"\"") {
+    if (courseNumber && courseNumber !== '""') {
         searchParams.push({ courseNumber: new RegExp('.*' + courseNumber + '.*', 'i') });
     }
 

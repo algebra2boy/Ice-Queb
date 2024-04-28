@@ -18,7 +18,7 @@ const server = https.createServer(credentials, app);
 
 server.listen(PORT, () => {
     if (process.env.NODE_ENV !== 'test') {
-        console.log(`HTTPS server running on port ${PORT}`);
+        console.log(`the server is running on port ${PORT}`);
     }
 });
 

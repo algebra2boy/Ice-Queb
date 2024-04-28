@@ -1,8 +1,8 @@
 import { MongoClient, ServerApiVersion, Db, Collection } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { OfficeHour, StudentOfficeHourList } from '../services/officeHour/officeHour.model.js';
-import { User } from '../services/auth/auth.model.js';
 import { Queue } from '../services/queue/queue.model.js';
+import { User } from '../services/auth/auth.model.js';
 import { MongoDBName, DBCollection } from './constants.config.js';
 
 /**
@@ -138,7 +138,7 @@ export class MongoDB {
 
             const client = await MongoDB.client.connect();
 
-            await client.db(MongoDBName).command({ ping: 1 });
+            await client.db('iceQueb').command({ ping: 1 });
 
             if (process.env.NODE_ENV !== 'test') {
                 console.log('Pinged your deployment. You successfully connected to MongoDB!');

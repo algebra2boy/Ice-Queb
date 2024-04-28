@@ -29,7 +29,7 @@ async function login(payload: User): Promise<RegisterUser> {
     return {
         email: user.email,
         token: generateToken(user.email),
-        status: 'success'
+        status: 'success',
     };
 }
 
@@ -51,7 +51,7 @@ async function signup(payload: User): Promise<RegisterUser> {
     return {
         email: email,
         token: generateToken(email),
-        status: 'success'
+        status: 'success',
     };
 }
 
@@ -75,10 +75,9 @@ async function resetPassword(payload: ResetUser): Promise<RegisterUser> {
     return {
         email: email,
         token: generateToken(email),
-        status: 'success'
+        status: 'success',
     };
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////  HELPER FUNCTIONS FOR THE AUTH SERVICES    //////////////////
@@ -92,7 +91,7 @@ async function createNewUser(accountCollection: Collection<User>, payload: User)
 
     await accountCollection.insertOne({
         email: payload.email,
-        password: hashedPassword
+        password: hashedPassword,
     });
 }
 
@@ -102,11 +101,11 @@ async function validatePassword(payloadPassword: string, hashedPassword: string)
 
 async function createEmptyStudentOH(
     studentOHCollection: Collection<StudentOfficeHourList>,
-    email: string
+    email: string,
 ) {
     const emptyStudentOH: StudentOfficeHourList = {
         email: email,
-        officeHourId: []
+        officeHourId: [],
     };
     await studentOHCollection.insertOne(emptyStudentOH);
 }

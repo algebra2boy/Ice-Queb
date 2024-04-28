@@ -11,7 +11,7 @@ export default {
         .string({ required_error: 'Password does not exist' })
         .min(8, 'Password should have at least 8 characters'),
     newPasswordValidation: z
-        .string({required_error: 'New password does not exist'})
+        .string({ required_error: 'New password does not exist' })
         .min(8, 'New password should have at least 8 characters'),
 
     // Office Hour service validation
