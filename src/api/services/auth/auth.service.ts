@@ -38,14 +38,16 @@ async function login(payload: User): Promise<RegisterUser> {
 }
 
 async function signup(payload: User): Promise<RegisterUser> {
-    const studentOHCollection: Collection<OfficeHourList> = MongoDB.getStudentOHCollection();
-
     const email = payload.email.toLowerCase();
     const isTeacher = payload.isTeacher;
 
     const accountCollection = isTeacher
         ? MongoDB.getTeacherAccountCollection()
         : MongoDB.getAccountCollection();
+
+    const OHCollection = isTeacher
+        ? MongoDB.getTeacherOHCollection()
+        : MongoDB.getStudentOHCollection();
 
     const existingUser = await findUserByEmail(accountCollection, email);
 
@@ -54,7 +56,7 @@ async function signup(payload: User): Promise<RegisterUser> {
     }
 
     await createNewUser(accountCollection, { email, password: payload.password, isTeacher });
-    await createEmptyStudentOH(studentOHCollection, email);
+    await createEmptyOH(OHCollection, email);
 
     return {
         email: email,
@@ -115,15 +117,12 @@ async function validatePassword(payloadPassword: string, hashedPassword: string)
     return await bcrypt.compare(payloadPassword, hashedPassword);
 }
 
-async function createEmptyStudentOH(
-    studentOHCollection: Collection<OfficeHourList>,
-    email: string,
-) {
-    const emptyStudentOH: OfficeHourList = {
+async function createEmptyOH(OHCollection: Collection<OfficeHourList>, email: string) {
+    const emptyOH: OfficeHourList = {
         email: email,
         officeHourId: [],
     };
-    await studentOHCollection.insertOne(emptyStudentOH);
+    await OHCollection.insertOne(emptyOH);
 }
 
 export { login, signup, resetPassword };
