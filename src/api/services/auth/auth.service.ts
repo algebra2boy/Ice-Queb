@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { MongoDB } from '../../configs/database.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
 import { User, RegisterUser, ResetUser } from './auth.model.js';
-import { StudentOfficeHourList } from '../officeHour/officeHour.model.js';
+import { OfficeHourList } from '../officeHour/officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { generateToken } from '../../utils/token.util.js';
 
@@ -38,7 +38,7 @@ async function login(payload: User): Promise<RegisterUser> {
 }
 
 async function signup(payload: User): Promise<RegisterUser> {
-    const studentOHCollection: Collection<StudentOfficeHourList> = MongoDB.getStudentOHCollection();
+    const studentOHCollection: Collection<OfficeHourList> = MongoDB.getStudentOHCollection();
 
     const email = payload.email.toLowerCase();
     const isTeacher = payload.isTeacher;
@@ -116,10 +116,10 @@ async function validatePassword(payloadPassword: string, hashedPassword: string)
 }
 
 async function createEmptyStudentOH(
-    studentOHCollection: Collection<StudentOfficeHourList>,
+    studentOHCollection: Collection<OfficeHourList>,
     email: string,
 ) {
-    const emptyStudentOH: StudentOfficeHourList = {
+    const emptyStudentOH: OfficeHourList = {
         email: email,
         officeHourId: [],
     };

@@ -3,6 +3,7 @@ export enum DBCollection {
     TeacherAccount = 'TeacherAccount',
     OfficeHour = 'OfficeHour',
     StudentOfficeHour = 'StudentOfficeHour',
+    TeacherOfficeHour = 'TeacherOfficeHour',
     Queue = 'Queue',
 }
 
