@@ -29,8 +29,11 @@ export class MongoDB {
     // the database instance of the mongodb
     private static iceQuebDB: Db;
 
-    // the collection of the account
+    // the collection of the student account
     private static accountCollection: Collection<User>;
+
+    // the collection of the teacher account
+    private static teacherAccountCollection: Collection<User>;
 
     // the collection of the office hours
     private static OHCollection: Collection<OfficeHour>;
@@ -94,6 +97,17 @@ export class MongoDB {
     }
 
     /**
+     * This static method retrieves the Account Collection
+     * @returns Account Collection.
+     */
+    public static getTeacherAccountCollection(): Collection<User> {
+        if (!MongoDB.teacherAccountCollection) {
+            throw new Error('Mongo TeacherAccount Collection does not exist yet...');
+        }
+        return MongoDB.teacherAccountCollection;
+    }
+
+    /**
      * This static method retrieves the OfficeHour Collection
      * @returns OfficeHour Collection.
      */
@@ -147,6 +161,7 @@ export class MongoDB {
             MongoDB.iceQuebDB = MongoDB.client.db(MongoDBName);
 
             MongoDB.accountCollection = MongoDB.iceQuebDB.collection(DBCollection.Account);
+            MongoDB.teacherAccountCollection = MongoDB.iceQuebDB.collection(DBCollection.TeacherAccount)
             MongoDB.OHCollection = MongoDB.iceQuebDB.collection(DBCollection.OfficeHour);
             MongoDB.studentOHCollection = MongoDB.iceQuebDB.collection(
                 DBCollection.StudentOfficeHour,
