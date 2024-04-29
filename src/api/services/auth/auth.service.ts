@@ -10,9 +10,12 @@ import { HttpError } from '../../utils/httpError.util.js';
 import { generateToken } from '../../utils/token.util.js';
 
 async function login(payload: User): Promise<RegisterUser> {
-    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
-
     const email = payload.email.toLowerCase();
+    const isTeacher = payload.isTeacher;
+
+    const accountCollection = isTeacher
+        ? MongoDB.getTeacherAccountCollection()
+        : MongoDB.getAccountCollection();
 
     const user = await findUserByEmail(accountCollection, email);
 
@@ -30,14 +33,19 @@ async function login(payload: User): Promise<RegisterUser> {
         email: user.email,
         token: generateToken(user.email),
         status: 'success',
+        isTeacher: isTeacher,
     };
 }
 
 async function signup(payload: User): Promise<RegisterUser> {
-    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
     const studentOHCollection: Collection<StudentOfficeHourList> = MongoDB.getStudentOHCollection();
 
     const email = payload.email.toLowerCase();
+    const isTeacher = payload.isTeacher;
+
+    const accountCollection = isTeacher
+        ? MongoDB.getTeacherAccountCollection()
+        : MongoDB.getAccountCollection();
 
     const existingUser = await findUserByEmail(accountCollection, email);
 
@@ -45,21 +53,27 @@ async function signup(payload: User): Promise<RegisterUser> {
         throw new HttpError(status.FORBIDDEN, error.USER_ALREADY_EXISTS(email));
     }
 
-    await createNewUser(accountCollection, { email, password: payload.password });
+    await createNewUser(accountCollection, { email, password: payload.password, isTeacher });
     await createEmptyStudentOH(studentOHCollection, email);
 
     return {
         email: email,
         token: generateToken(email),
         status: 'success',
+        isTeacher: isTeacher,
     };
 }
 
 async function resetPassword(payload: ResetUser): Promise<RegisterUser> {
-    const accountCollection: Collection<User> = MongoDB.getAccountCollection();
     const email = payload.email.toLowerCase();
+    const isTeacher = payload.isTeacher;
+
+    const accountCollection = isTeacher
+        ? MongoDB.getTeacherAccountCollection()
+        : MongoDB.getAccountCollection();
 
     const user = await findUserByEmail(accountCollection, email);
+
     if (!user) {
         throw new HttpError(status.NOT_FOUND, error.USER_NOT_FOUND(email));
     }
@@ -76,6 +90,7 @@ async function resetPassword(payload: ResetUser): Promise<RegisterUser> {
         email: email,
         token: generateToken(email),
         status: 'success',
+        isTeacher: isTeacher,
     };
 }
 
@@ -92,6 +107,7 @@ async function createNewUser(accountCollection: Collection<User>, payload: User)
     await accountCollection.insertOne({
         email: payload.email,
         password: hashedPassword,
+        isTeacher: payload.isTeacher,
     });
 }
 
