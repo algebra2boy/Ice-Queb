@@ -1,6 +1,6 @@
 export type OfficeHourId = string;
 
-export interface StudentOfficeHourList {
+export interface OfficeHourList {
     email: string;
     officeHourId: OfficeHourId[];
 }
@@ -8,6 +8,7 @@ export interface StudentOfficeHourList {
 export interface OfficeHour {
     id: OfficeHourId;
     facultyName: string;
+    facultyEmail: string;
     day: number;
     startDate: string;
     endDate: string;

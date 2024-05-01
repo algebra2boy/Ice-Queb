@@ -85,7 +85,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
                     });
                     io.to(socket.id).emit('join queue response', {
                         status: 'success',
-                        data: 0,
+                        data: 1,
                         error: null,
                     });
                     return;
@@ -108,7 +108,7 @@ export function setupSocketServer(server: http.Server): SocketIOServer {
 
                 io.to(socket.id).emit('join queue response', {
                     status: 'success',
-                    data: pplInQueue,
+                    data: pplInQueue + 1,
                     error: null,
                 });
             } catch (err) {
