@@ -16,6 +16,7 @@ export const officeHourIDSchema = z.object({
 export const officeHourUploadSchema = z.object({
     body: z.object({
         facultyName: schemaLibrary.facultyNameValidation,
+        facultyEmail: schemaLibrary.emailValidation,
         startDate: schemaLibrary.dateValidation,
         endDate: schemaLibrary.dateValidation,
         day: schemaLibrary.dayValidation,

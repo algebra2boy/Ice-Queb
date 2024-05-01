@@ -115,6 +115,7 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
 
 async function uploadOfficeHour(payload: OfficeHourPayload) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
+    const teacherOfficeHourCollection: Collection<OfficeHourList> = MongoDB.getTeacherOHCollection();
 
     const payloadWithAbbreviatedCourseDepartment = {
         ...payload,
@@ -129,8 +130,10 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
         throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_ALREADY_EXISTS);
     }
 
+    const officeHourId = uuidv4()
+
     const officeHourToUpload: OfficeHour = {
-        id: uuidv4(),
+        id: officeHourId,
         ...payloadWithAbbreviatedCourseDepartment,
     };
 
@@ -138,6 +141,12 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
     // because insertOne will automatically add _id field to the object
     // therefore we need to create a new object to avoid modifying the original object
     await officeHourCollection.insertOne({ ...officeHourToUpload });
+
+    const filter = { email: payload.facultyEmail }; // filter by email
+    const update = { $addToSet: { officeHourId: officeHourId } };
+    const option = { upsert: true }; // if no document matches the filter, a new document will be created
+
+    await teacherOfficeHourCollection.updateOne(filter, update, option);
 
     return {
         officeHourToUpload,

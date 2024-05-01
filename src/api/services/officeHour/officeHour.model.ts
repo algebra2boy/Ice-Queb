@@ -8,6 +8,7 @@ export interface OfficeHourList {
 export interface OfficeHour {
     id: OfficeHourId;
     facultyName: string;
+    facultyEmail: string;
     day: number;
     startDate: string;
     endDate: string;
