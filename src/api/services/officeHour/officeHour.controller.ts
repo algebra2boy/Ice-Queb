@@ -4,9 +4,11 @@ import * as officeHourService from './officeHour.service.js';
 
 export const getOfficeHourList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const officeHourList = await officeHourService.getAllOfficeHourByStudentEmail(
-            req.query.email as string,
-        );
+        const email = req.query.email as string;
+        const isTeacher = req.query.isTeacher as string | undefined
+
+        const officeHourList = await officeHourService.getAllOfficeHourByEmail(email, isTeacher)
+        
         res.status(status.OK).json(officeHourList);
     } catch (error) {
         next(error);

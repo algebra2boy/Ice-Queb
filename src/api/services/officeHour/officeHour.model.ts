@@ -1,6 +1,6 @@
 export type OfficeHourId = string;
 
-export interface StudentOfficeHourList {
+export interface OfficeHourList {
     email: string;
     officeHourId: OfficeHourId[];
 }

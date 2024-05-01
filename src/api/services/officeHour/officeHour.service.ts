@@ -5,25 +5,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { MongoDB } from '../../configs/database.config.js';
 import { DBCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
-import {
-    StudentOfficeHourList,
-    OfficeHour,
-    OfficeHourId,
-    OfficeHourPayload,
-} from './officeHour.model.js';
+import { OfficeHourList, OfficeHour, OfficeHourId, OfficeHourPayload } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
 import { shuffleArray } from '../../utils/fisher-yates-shuffle.js';
 
-async function getAllOfficeHourByStudentEmail(email: string) {
-    const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
-        MongoDB.getStudentOHCollection();
+async function getAllOfficeHourByEmail(email: string, isTeacher?: string) {
+    const officeHourListCollection: Collection<OfficeHourList> = isTeacher
+        ? MongoDB.getTeacherOHCollection()
+        : MongoDB.getStudentOHCollection();
 
     // get office hour ID that belongs to student
-    const officeHourIDs: string[] = await getOfficeHourIDByEmail(
-        studentOfficeHourCollection,
-        email,
-    );
+    const officeHourIDs: string[] = await getOfficeHourIDByEmail(officeHourListCollection, email);
 
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getIceQuebDB().collection(
         DBCollection.OfficeHour,
@@ -78,7 +71,7 @@ async function searchOfficeHour(facultyName: string, courseName: string, searchL
 }
 
 async function addOfficeHourToStudentList(officeHourId: string, email: string) {
-    const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
+    const studentOfficeHourCollection: Collection<OfficeHourList> =
         MongoDB.getStudentOHCollection();
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
@@ -94,7 +87,7 @@ async function addOfficeHourToStudentList(officeHourId: string, email: string) {
 }
 
 async function removeOfficeHourFromStudentList(officeHourID: string, email: string) {
-    const studentOfficeHourCollection: Collection<StudentOfficeHourList> =
+    const studentOfficeHourCollection: Collection<OfficeHourList> =
         MongoDB.getStudentOHCollection();
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
 
@@ -109,7 +102,7 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
     );
 
     const filter = { email: email };
-    const newStudentOfficeHourDocument: StudentOfficeHourList = {
+    const newStudentOfficeHourDocument: OfficeHourList = {
         email: email,
         officeHourId: newofficeHourIDs,
     };
@@ -156,20 +149,20 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
 //////////////////  HELPER FUNCTIONS FOR THE Office HOUR SERVICES    ///////////
 ////////////////////////////////////////////////////////////////////////////////
 async function getOfficeHourIDByEmail(
-    studentOfficeHourCollection: Collection<StudentOfficeHourList>,
+    officeHourCollection: Collection<OfficeHourList>,
     email: string,
 ): Promise<OfficeHourId[]> {
-    const studentOfficeHourDocument = await studentOfficeHourCollection.findOne({ email: email });
+    const officeHourDocument = await officeHourCollection.findOne({ email: email });
 
-    if (!studentOfficeHourDocument) {
-        throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_DOCUMENT_NOT_FOUND(email));
+    if (!officeHourDocument) {
+        throw new HttpError(status.NOT_FOUND, error.OFFICE_HOUR_DOCUMENT_NOT_FOUND(email));
     }
 
-    if (!studentOfficeHourDocument.officeHourId) {
-        throw new HttpError(status.NOT_FOUND, error.STUDENT_OFFICE_HOUR_NOT_FOUND(email));
+    if (!officeHourDocument.officeHourId) {
+        throw new HttpError(status.NOT_FOUND, error.OFFICE_HOUR_LIST_NOT_FOUND(email));
     }
 
-    return studentOfficeHourDocument.officeHourId;
+    return officeHourDocument.officeHourId;
 }
 
 async function checkOfficeHourIDExistence(
@@ -184,7 +177,7 @@ async function checkOfficeHourIDExistence(
 }
 
 function returnAddOfficeHourResult(
-    updateResult: UpdateResult<StudentOfficeHourList>,
+    updateResult: UpdateResult<OfficeHourList>,
     officeHourId: string,
     email: string,
 ) {
@@ -227,7 +220,7 @@ function defineSearchQuery(facultyName: string, courseDepartment: string, course
 }
 
 export {
-    getAllOfficeHourByStudentEmail,
+    getAllOfficeHourByEmail,
     searchOfficeHour,
     addOfficeHourToStudentList,
     removeOfficeHourFromStudentList,

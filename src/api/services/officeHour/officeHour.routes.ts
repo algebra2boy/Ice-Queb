@@ -11,8 +11,10 @@ import jwtMiddleware from '../../middlewares/JsonWebToken.middleware.js';
 
 const router = Router();
 
-// STUDENT ROUTE
+// SHARED ROUTE
 router.get('/list', validate(officeHourListSchema), officeHourController.getOfficeHourList);
+
+// STUDENT ROUTE
 router.get('/search', officeHourController.searchOfficeHour);
 router.post(
     '/add/:officeHourID',
