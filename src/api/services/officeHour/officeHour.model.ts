@@ -18,4 +18,4 @@ export interface OfficeHour {
     courseNumber: string;
 }
 
-export type OfficeHourPayload = Omit<OfficeHour, 'id'>;
+export type OfficeHourWithoutID = Omit<OfficeHour, 'id'>;

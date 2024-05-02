@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { MongoDB } from '../../configs/database.config.js';
 import { DBCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
-import { OfficeHourList, OfficeHour, OfficeHourId, OfficeHourPayload } from './officeHour.model.js';
+import { OfficeHourList, OfficeHour, OfficeHourId, OfficeHourWithoutID } from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
 import { shuffleArray } from '../../utils/fisher-yates-shuffle.js';
@@ -113,7 +113,7 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
     return { status: 'success' };
 }
 
-async function uploadOfficeHour(payload: OfficeHourPayload) {
+async function uploadOfficeHour(payload: OfficeHourWithoutID) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
     const teacherOfficeHourCollection: Collection<OfficeHourList> = MongoDB.getTeacherOHCollection();
 
@@ -152,6 +152,36 @@ async function uploadOfficeHour(payload: OfficeHourPayload) {
         officeHourToUpload,
         status: 'success',
     };
+}
+
+async function editOfficeHour(payload: OfficeHour) {
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
+
+    const payloadWithAbbreviatedCourseDepartment = {
+        ...payload,
+        courseDepartment: departmentTranslation[payload.courseDepartment],
+    };
+
+    const officeHourDocument = await officeHourCollection.findOne({ id: payload.id });
+
+    if (!officeHourDocument) {
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...officeHour } = payload;
+        await uploadOfficeHour(officeHour)
+    } else {
+
+        await officeHourCollection.updateOne(
+            { id: officeHourDocument.id },
+            { $set: payloadWithAbbreviatedCourseDepartment },
+        );
+
+        return {
+            officeHourToEdit: payloadWithAbbreviatedCourseDepartment,
+            status: 'success',
+        };
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -234,4 +264,5 @@ export {
     addOfficeHourToStudentList,
     removeOfficeHourFromStudentList,
     uploadOfficeHour,
+    editOfficeHour
 };
