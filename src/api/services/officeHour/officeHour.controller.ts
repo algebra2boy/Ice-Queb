@@ -69,3 +69,12 @@ export const editOfficeHour = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 };
+
+export const deleteOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const deleteResult = await officeHourService.deleteOfficeHour(req.body);
+        res.status(status.OK).json(deleteResult);
+    } catch (error) {
+        next(error);
+    }
+};

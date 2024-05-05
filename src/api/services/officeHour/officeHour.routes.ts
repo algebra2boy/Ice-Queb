@@ -5,6 +5,7 @@ import {
     officeHourListSchema,
     officeHourIDSchema,
     officeHourUploadSchema,
+    officeHourDeleteSchema
 } from '../../validations/officeHour.validation.js';
 
 import jwtMiddleware from '../../middlewares/JsonWebToken.middleware.js';
@@ -32,5 +33,6 @@ router.delete(
 // TEACHER ROUTE
 router.post('/upload', validate(officeHourUploadSchema), officeHourController.uploadOfficeHour);
 router.put('/edit', validate(officeHourUploadSchema), officeHourController.editOfficeHour);
+router.delete('/delete', validate(officeHourDeleteSchema), officeHourController.deleteOfficeHour);
 
 export default router;
