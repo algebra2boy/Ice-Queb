@@ -5,7 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { MongoDB } from '../../configs/database.config.js';
 import { DBCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
-import { OfficeHourList, OfficeHour, OfficeHourId, OfficeHourWithoutID } from './officeHour.model.js';
+import {
+    OfficeHourList,
+    OfficeHour,
+    OfficeHourId,
+    OfficeHourWithoutID,
+} from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
 import { shuffleArray } from '../../utils/fisher-yates-shuffle.js';
@@ -115,7 +120,8 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
 
 async function uploadOfficeHour(payload: OfficeHourWithoutID) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
-    const teacherOfficeHourCollection: Collection<OfficeHourList> = MongoDB.getTeacherOHCollection();
+    const teacherOfficeHourCollection: Collection<OfficeHourList> =
+        MongoDB.getTeacherOHCollection();
 
     const payloadWithAbbreviatedCourseDepartment = {
         ...payload,
@@ -194,11 +200,11 @@ async function deleteOfficeHour(payload: OfficeHour) {
         endDate: payload.endDate,
     };
 
-    console.log(officeHourToDelete)
+    console.log(officeHourToDelete);
 
     const officeHourDocuments = await officeHourCollection.find(officeHourToDelete).toArray();
 
-    console.log(officeHourDocuments)
+    console.log(officeHourDocuments);
 
     if (!officeHourDocuments) {
         throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_NOT_FOUND);
@@ -220,10 +226,10 @@ async function deleteOfficeHour(payload: OfficeHour) {
         officeHourId => !officeHourIdsToDelete.includes(officeHourId),
     );
 
-    const filter = { email: payload.facultyEmail }; 
+    const filter = { email: payload.facultyEmail };
     const update = { $set: { email: payload.facultyEmail, officeHourId: newOfficeHourIds } };
 
-    await officeHourCollection.deleteMany({$or: officeHourDocuments});
+    await officeHourCollection.deleteMany({ $or: officeHourDocuments });
     await teacherOfficeHourCollection.updateOne(filter, update);
 
     return {

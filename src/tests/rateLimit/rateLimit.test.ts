@@ -14,7 +14,7 @@ describe('rate limit for auth service routes', () => {
     });
 
     it('login rate limit', async () => {
-        let payload = { email: 'ABC@gmail.com', password: '123456789' };
+        const payload = { email: 'ABC@gmail.com', password: '123456789' };
         for (let i = 0; i < 10; i++) {
             await request(app).post('/api/auth/signup').send(payload);
             payload.email = `${i}` + payload.email.slice(1);
@@ -26,13 +26,13 @@ describe('rate limit for auth service routes', () => {
     });
 
     it('signup rate limit continue', async () => {
-        let payload = { email: 'more@gmail.com', password: '123456789' };
+        const payload = { email: 'more@gmail.com', password: '123456789' };
         const r = await request(app).post('/api/auth/signup').send(payload);
         expect(r.statusCode).toBe(429);
     });
 
     it('login rate limit due to sign up route', async () => {
-        let payload = { email: 'ABC@gmail.com', password: '123456789' };
+        const payload = { email: 'ABC@gmail.com', password: '123456789' };
         const r = await request(app).post('/api/auth/login').send(payload);
         expect(r.statusCode).toBe(429);
     });

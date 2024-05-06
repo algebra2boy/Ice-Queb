@@ -5,7 +5,7 @@ import {
     officeHourListSchema,
     officeHourIDSchema,
     officeHourUploadSchema,
-    officeHourDeleteSchema
+    officeHourDeleteSchema,
 } from '../../validations/officeHour.validation.js';
 
 import jwtMiddleware from '../../middlewares/JsonWebToken.middleware.js';

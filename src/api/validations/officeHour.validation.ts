@@ -34,5 +34,5 @@ export const officeHourDeleteSchema = z.object({
         endDate: schemaLibrary.dateValidation,
         courseDepartment: schemaLibrary.courseDepartmentValidation,
         courseNumber: schemaLibrary.courseNumberValidation,
-    }), 
+    }),
 });

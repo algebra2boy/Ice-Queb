@@ -18,14 +18,18 @@ describe('authentication service routes for reset password', () => {
 
     describe('reset password for a user', () => {
         it('successfully reset password', async () => {
-            const signupPayload = { email: 'reset@umass.edu', password: 'oldPassword123', isTeacher: false };
+            const signupPayload = {
+                email: 'reset@umass.edu',
+                password: 'oldPassword123',
+                isTeacher: false,
+            };
             await request(app).post('/api/auth/signup').send(signupPayload);
 
             const resetPayload = {
                 email: 'reset@umass.edu',
                 oldPassword: 'oldPassword123',
                 newPassword: 'newPassword123',
-                isTeacher: false
+                isTeacher: false,
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
@@ -35,14 +39,18 @@ describe('authentication service routes for reset password', () => {
         });
 
         it('reset with incorrect old password', async () => {
-            const signupPayload = { email: 'reset2@umass.edu', password: 'oldPassword123', isTeacher: false };
+            const signupPayload = {
+                email: 'reset2@umass.edu',
+                password: 'oldPassword123',
+                isTeacher: false,
+            };
             await request(app).post('/api/auth/signup').send(signupPayload);
 
             const resetPayload = {
                 email: 'reset2@umass.edu',
                 oldPassword: 'incorrectOldPassword',
                 newPassword: 'newPassword123',
-                isTeacher: false
+                isTeacher: false,
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
@@ -58,7 +66,7 @@ describe('authentication service routes for reset password', () => {
                 email: 'marius@marius.hell',
                 oldPassword: 'oldPassword123',
                 newPassword: 'newPassword123',
-                isTeacher: false
+                isTeacher: false,
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
@@ -70,7 +78,11 @@ describe('authentication service routes for reset password', () => {
         });
 
         it('missing new password in request', async () => {
-            const signupPayload = { email: 'reset3@umass.edu', password: 'oldPassword123', isTeacher: false };
+            const signupPayload = {
+                email: 'reset3@umass.edu',
+                password: 'oldPassword123',
+                isTeacher: false,
+            };
             await request(app).post('/api/auth/signup').send(signupPayload);
 
             const resetPayload = {
@@ -96,7 +108,7 @@ describe('authentication service routes for reset password', () => {
 
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                message: ['This is not a valid email', "Missing isTeacher"],
+                message: ['This is not a valid email', 'Missing isTeacher'],
                 status: 'failure',
             });
         });

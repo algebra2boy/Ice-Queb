@@ -42,7 +42,7 @@ describe('office hour service delete OH route', () => {
 
     describe('authenticated user request', () => {
         let token = '';
-        let email = 'yongye0997@gmail.com';
+        const email = 'yongye0997@gmail.com';
         let OH1_ID = '';
         let OH2_ID = '';
 
@@ -55,7 +55,7 @@ describe('office hour service delete OH route', () => {
             token = signupResponse.body.token;
 
             const payload1 = {
-                facultyEmail: "Yongye1209@gmail.com",
+                facultyEmail: 'Yongye1209@gmail.com',
                 facultyName: 'Yongye',
                 startDate: '2022-01-01',
                 endDate: '2022-01-01',
@@ -67,7 +67,7 @@ describe('office hour service delete OH route', () => {
             };
 
             const payload2 = {
-                facultyEmail: "george@gmail.com",
+                facultyEmail: 'george@gmail.com',
                 facultyName: 'George',
                 startDate: '2022-02-02',
                 endDate: '2022-02-03',

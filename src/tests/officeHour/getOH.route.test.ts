@@ -6,6 +6,7 @@ import { MongoDB } from '../../api/configs/database.config.js';
 describe('office hour service get OH routes', () => {
     // helper function to create a user and add an OH
     // return the token, the OH_ID. and the object
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function createUserAndAddOH(email: string): Promise<[string, string, any]> {
         const signupPayload = { email: email, password: '12345678', isTeacher: false };
         const signupResponse = await request(app).post('/api/auth/signup').send(signupPayload);
@@ -13,7 +14,7 @@ describe('office hour service get OH routes', () => {
         const token: string = signupResponse.body.token;
 
         const payload = {
-            facultyEmail: "Yongye1209@gmail.com",
+            facultyEmail: 'Yongye1209@gmail.com',
             facultyName: 'Yongye',
             startDate: '2022-01-01',
             endDate: '2022-01-01',
@@ -42,6 +43,7 @@ describe('office hour service get OH routes', () => {
         });
 
         let token: string, OH_ID: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let OfficeHour: any;
 
         beforeAll(async () => {

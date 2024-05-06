@@ -5,7 +5,7 @@ export const authSchema = z.object({
     body: z.object({
         email: schemaLibrary.emailValidation,
         password: schemaLibrary.passwordValidation,
-        isTeacher: schemaLibrary.isTeacherValidation
+        isTeacher: schemaLibrary.isTeacherValidation,
     }),
 });
 

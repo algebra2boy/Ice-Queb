@@ -47,7 +47,7 @@ describe('authentication service routes for sign up', () => {
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                message: ['Email does not exist', "Missing isTeacher"],
+                message: ['Email does not exist', 'Missing isTeacher'],
                 status: 'failure',
             };
 
@@ -60,7 +60,7 @@ describe('authentication service routes for sign up', () => {
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                message: ['Password does not exist', "Missing isTeacher"],
+                message: ['Password does not exist', 'Missing isTeacher'],
                 status: 'failure',
             };
 
@@ -72,7 +72,7 @@ describe('authentication service routes for sign up', () => {
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                message: ['Password does not exist', "Missing isTeacher"],
+                message: ['Password does not exist', 'Missing isTeacher'],
                 status: 'failure',
             };
 
