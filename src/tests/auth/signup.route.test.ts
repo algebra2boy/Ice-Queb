@@ -18,7 +18,7 @@ describe('authentication service routes for sign up', () => {
 
     describe('sign up for a user', () => {
         it('correct signup', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123' };
+            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: false };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             expect(response.statusCode).toBe(201);
@@ -31,7 +31,7 @@ describe('authentication service routes for sign up', () => {
         });
 
         it('duplicate signup', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123' };
+            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: false };
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             expect(response.statusCode).toBe(403);
@@ -47,7 +47,7 @@ describe('authentication service routes for sign up', () => {
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                message: ['Email does not exist'],
+                message: ['Email does not exist', "Missing isTeacher"],
                 status: 'failure',
             };
 
@@ -60,7 +60,7 @@ describe('authentication service routes for sign up', () => {
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                message: ['Password does not exist'],
+                message: ['Password does not exist', "Missing isTeacher"],
                 status: 'failure',
             };
 
@@ -72,7 +72,7 @@ describe('authentication service routes for sign up', () => {
             const response = await request(app).post('/api/auth/signup').send(payload);
 
             const expectedError = {
-                message: ['Password does not exist'],
+                message: ['Password does not exist', "Missing isTeacher"],
                 status: 'failure',
             };
 

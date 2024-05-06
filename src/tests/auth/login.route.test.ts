@@ -25,8 +25,6 @@ describe('authentication service routes for login', () => {
                 .post('/api/auth/login')
                 .send({ email: 'gg1@example.com', password: 'password123', isTeacher: false });
 
-            console.log(response.statusCode)
-
             expect(response.statusCode).toBe(200);
             expect(response.body.email).toBeDefined();
             expect(response.body.token).toBeDefined();
@@ -60,8 +58,6 @@ describe('authentication service routes for login', () => {
 
         it('missing email and password login', async () => {
             const response = await request(app).post('/api/auth/login' );
-
-            console.log(response.body)
 
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
