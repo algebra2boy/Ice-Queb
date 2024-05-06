@@ -5,7 +5,7 @@ export const authSchema = z.object({
     body: z.object({
         email: schemaLibrary.emailValidation,
         password: schemaLibrary.passwordValidation,
-        isTeacher: z.boolean()
+        isTeacher: schemaLibrary.isTeacherValidation
     }),
 });
 
@@ -14,6 +14,6 @@ export const resetAuthSchema = z.object({
         email: schemaLibrary.emailValidation,
         oldPassword: schemaLibrary.passwordValidation,
         newPassword: schemaLibrary.newPasswordValidation,
-        isTeacher: z.boolean()
+        isTeacher: schemaLibrary.isTeacherValidation,
     }),
 });

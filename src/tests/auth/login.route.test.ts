@@ -18,12 +18,14 @@ describe('authentication service routes for login', () => {
 
     describe('login for a user', () => {
         it('sign up a user then login successfully', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123' };
+            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: false };
             await request(app).post('/api/auth/signup').send(payload);
 
             const response = await request(app)
                 .post('/api/auth/login')
-                .send({ email: 'gg1@example.com', password: 'password123' });
+                .send({ email: 'gg1@example.com', password: 'password123', isTeacher: false });
+
+            console.log(response.statusCode)
 
             expect(response.statusCode).toBe(200);
             expect(response.body.email).toBeDefined();
@@ -31,12 +33,12 @@ describe('authentication service routes for login', () => {
         });
 
         it('sign up a user then login with a wrong password', async () => {
-            const payload = { email: 'gg1@example.com', password: 'password123' };
+            const payload = { email: 'gg1@example.com', password: 'password123', isTeacher: false };
             await request(app).post('/api/auth/signup').send(payload);
 
             const response = await request(app)
                 .post('/api/auth/login')
-                .send({ email: 'gg1@example.com', password: 'badpassword' });
+                .send({ email: 'gg1@example.com', password: 'badpassword', isTeacher: false });
 
             expect(response.statusCode).toBe(401);
             expect(response.body).toStrictEqual({
@@ -46,7 +48,7 @@ describe('authentication service routes for login', () => {
         });
 
         it('login with a non existing user', async () => {
-            const payload = { email: 'apple@example.com', password: 'password123' };
+            const payload = { email: 'apple@example.com', password: 'password123', isTeacher: false };
             const response = await request(app).post('/api/auth/login').send(payload);
 
             expect(response.statusCode).toBe(404);
@@ -57,10 +59,13 @@ describe('authentication service routes for login', () => {
         });
 
         it('missing email and password login', async () => {
-            const response = await request(app).post('/api/auth/login');
+            const response = await request(app).post('/api/auth/login' );
+
+            console.log(response.body)
+
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                message: ['Email does not exist', 'Password does not exist'],
+                message: ['Email does not exist', 'Password does not exist', 'Missing isTeacher'],
                 status: 'failure',
             });
         });
@@ -70,7 +75,7 @@ describe('authentication service routes for login', () => {
             const response = await request(app).post('/api/auth/login').send(payload);
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                message: ['Email does not exist'],
+                message: ['Email does not exist', 'Missing isTeacher'],
                 status: 'failure',
             });
         });
@@ -80,7 +85,7 @@ describe('authentication service routes for login', () => {
             const response = await request(app).post('/api/auth/login').send(payload);
             expect(response.statusCode).toBe(400);
             expect(response.body).toStrictEqual({
-                message: ['Password does not exist'],
+                message: ['Password does not exist', 'Missing isTeacher'],
                 status: 'failure',
             });
         });
@@ -91,7 +96,7 @@ describe('authentication service routes for login', () => {
             expect(response.statusCode).toBe(400);
 
             expect(response.body).toStrictEqual({
-                message: ['This is not a valid email', 'Password does not exist'],
+                message: ['This is not a valid email', 'Password does not exist', 'Missing isTeacher'],
                 status: 'failure',
             });
         });
