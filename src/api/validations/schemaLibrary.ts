@@ -40,4 +40,7 @@ export default {
     officeHourIDValidation: z
         .string({ required_error: 'officeHourID does not exist' })
         .length(36, 'officeHourID should be 36 characters long'),
+
+    isTeacherValidation: z
+        .boolean({required_error: "Missing isTeacher"})
 };

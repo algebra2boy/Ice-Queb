@@ -93,7 +93,8 @@ describe('office hour service office hour routes', () => {
 
         testCases.forEach(({ description, fieldToRemove, modify, expectedError }) => {
             it(description, async () => {
-                let payload: Payload = {
+                const payload: Payload = {
+                    facultyEmail: 'JohnDoe@umass.edu',
                     facultyName: 'John Doe',
                     startDate: '2022-01-01',
                     endDate: '2022-01-01',
@@ -116,6 +117,7 @@ describe('office hour service office hour routes', () => {
 
         it('upload a office hour successfully', async () => {
             const payload = {
+                facultyEmail: 'JohnDoe@umass.edu',
                 facultyName: 'John Doe',
                 startDate: '2022-01-01',
                 endDate: '2022-01-01',
@@ -146,6 +148,7 @@ describe('office hour service office hour routes', () => {
 
         it('upload a office hour successfully (2)', async () => {
             const payload = {
+                facultyEmail: 'yongye@umass.edu',
                 facultyName: 'Yongye',
                 startDate: '2022-01-01',
                 endDate: '2022-01-01',
