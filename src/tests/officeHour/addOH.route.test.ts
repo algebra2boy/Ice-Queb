@@ -47,7 +47,7 @@ describe('office hour service add OH routes', () => {
         let OH2_ID = '';
 
         beforeAll(async () => {
-            const signupPayload = { email: email, password: '12345678' };
+            const signupPayload = { email: email, password: '12345678', isTeacher: false };
             const signupResponse = await request(app).post('/api/auth/signup').send(signupPayload);
 
             expect(signupResponse.statusCode).toBe(201);
@@ -55,6 +55,7 @@ describe('office hour service add OH routes', () => {
             token = signupResponse.body.token;
 
             const payload1 = {
+                facultyEmail: "Yongye1209@gmail.com",
                 facultyName: 'Yongye',
                 startDate: '2022-01-01',
                 endDate: '2022-01-01',
@@ -66,6 +67,7 @@ describe('office hour service add OH routes', () => {
             };
 
             const payload2 = {
+                facultyEmail: "george@gmail.com",
                 facultyName: 'George',
                 startDate: '2022-02-02',
                 endDate: '2022-02-03',
