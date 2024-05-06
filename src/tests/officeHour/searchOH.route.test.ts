@@ -16,6 +16,7 @@ describe('office hour service search OH routes', () => {
 
     const uploadingOHPayloads = [
         {
+            facultyEmail: 'yongye@umass.edu',
             facultyName: 'Yongye',
             startDate: '2022-01-01',
             endDate: '2022-01-01',
@@ -26,6 +27,7 @@ describe('office hour service search OH routes', () => {
             courseNumber: '220',
         },
         {
+            facultyEmail: 'george1@umass.edu',
             facultyName: 'George',
             startDate: '2022-02-02',
             endDate: '2022-02-03',
@@ -36,6 +38,7 @@ describe('office hour service search OH routes', () => {
             courseNumber: '545',
         },
         {
+            facultyEmail: 'george2@umass.edu',
             facultyName: 'CS George',
             startDate: '2022-02-02',
             endDate: '2022-02-03',
@@ -46,6 +49,7 @@ describe('office hour service search OH routes', () => {
             courseNumber: '520',
         },
         {
+            facultyEmail: 'george2@umass.edu',
             facultyName: 'CS George',
             startDate: '2022-02-02',
             endDate: '2022-02-03',
@@ -88,6 +92,8 @@ describe('office hour service search OH routes', () => {
             );
 
             expect(response.statusCode).toBe(200);
+
+            console.log(response.body)
 
             expect(response.body).toHaveProperty('searchResult');
 
