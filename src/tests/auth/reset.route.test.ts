@@ -29,9 +29,6 @@ describe('authentication service routes for reset password', () => {
             };
             const response = await request(app).post('/api/auth/reset').send(resetPayload);
 
-            console.log(response.body);
-            console.log(response.status)
-
             expect(response.statusCode).toBe(200);
             expect(response.body.email).toBe('reset@umass.edu');
             expect(response.body.token).toBeDefined();

@@ -93,8 +93,6 @@ describe('office hour service search OH routes', () => {
 
             expect(response.statusCode).toBe(200);
 
-            console.log(response.body)
-
             expect(response.body).toHaveProperty('searchResult');
 
             expect(Array.isArray(response.body.searchResult)).toBe(true);
