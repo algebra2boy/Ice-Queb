@@ -5,7 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { MongoDB } from '../../configs/database.config.js';
 import { DBCollection } from '../../configs/constants.config.js';
 import { ErrorMessages as error } from '../../configs/errorsMessage.config.js';
-import { OfficeHourList, OfficeHour, OfficeHourId, OfficeHourWithoutID } from './officeHour.model.js';
+import {
+    OfficeHourList,
+    OfficeHour,
+    OfficeHourId,
+    OfficeHourWithoutID,
+} from './officeHour.model.js';
 import { HttpError } from '../../utils/httpError.util.js';
 import { departmentTranslation } from '../../utils/departmentTranslation.util.js';
 import { shuffleArray } from '../../utils/fisher-yates-shuffle.js';
@@ -115,7 +120,8 @@ async function removeOfficeHourFromStudentList(officeHourID: string, email: stri
 
 async function uploadOfficeHour(payload: OfficeHourWithoutID) {
     const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
-    const teacherOfficeHourCollection: Collection<OfficeHourList> = MongoDB.getTeacherOHCollection();
+    const teacherOfficeHourCollection: Collection<OfficeHourList> =
+        MongoDB.getTeacherOHCollection();
 
     const payloadWithAbbreviatedCourseDepartment = {
         ...payload,
@@ -130,7 +136,7 @@ async function uploadOfficeHour(payload: OfficeHourWithoutID) {
         throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_ALREADY_EXISTS);
     }
 
-    const officeHourId = uuidv4()
+    const officeHourId = uuidv4();
 
     const officeHourToUpload: OfficeHour = {
         id: officeHourId,
@@ -165,12 +171,10 @@ async function editOfficeHour(payload: OfficeHour) {
     const officeHourDocument = await officeHourCollection.findOne({ id: payload.id });
 
     if (!officeHourDocument) {
-
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id, ...officeHour } = payload;
-        await uploadOfficeHour(officeHour)
+        await uploadOfficeHour(officeHour);
     } else {
-
         await officeHourCollection.updateOne(
             { id: officeHourDocument.id },
             { $set: payloadWithAbbreviatedCourseDepartment },
@@ -181,7 +185,57 @@ async function editOfficeHour(payload: OfficeHour) {
             status: 'success',
         };
     }
+}
 
+async function deleteOfficeHour(payload: OfficeHour) {
+    const officeHourCollection: Collection<OfficeHour> = MongoDB.getOHCollection();
+    const teacherOfficeHourCollection: Collection<OfficeHourList> =
+        MongoDB.getTeacherOHCollection();
+
+    const officeHourToDelete = {
+        facultyEmail: payload.facultyEmail,
+        courseDepartment: departmentTranslation[payload.courseDepartment],
+        courseNumber: payload.courseNumber,
+        startDate: payload.startDate,
+        endDate: payload.endDate,
+    };
+
+    console.log(officeHourToDelete);
+
+    const officeHourDocuments = await officeHourCollection.find(officeHourToDelete).toArray();
+
+    console.log(officeHourDocuments);
+
+    if (!officeHourDocuments) {
+        throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_NOT_FOUND);
+    }
+
+    if (officeHourDocuments.length === 0) {
+        return {
+            officeHourDocuments: [],
+            status: 'success',
+        };
+    }
+
+    const facultyAccount = await teacherOfficeHourCollection.findOne({
+        email: payload.facultyEmail,
+    });
+
+    const officeHourIdsToDelete = officeHourDocuments.map(officeHour => officeHour.id);
+    const newOfficeHourIds = facultyAccount?.officeHourId.filter(
+        officeHourId => !officeHourIdsToDelete.includes(officeHourId),
+    );
+
+    const filter = { email: payload.facultyEmail };
+    const update = { $set: { email: payload.facultyEmail, officeHourId: newOfficeHourIds } };
+
+    await officeHourCollection.deleteMany({ $or: officeHourDocuments });
+    await teacherOfficeHourCollection.updateOne(filter, update);
+
+    return {
+        officeHourDocuments,
+        status: 'success',
+    };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -264,5 +318,6 @@ export {
     addOfficeHourToStudentList,
     removeOfficeHourFromStudentList,
     uploadOfficeHour,
-    editOfficeHour
+    editOfficeHour,
+    deleteOfficeHour,
 };

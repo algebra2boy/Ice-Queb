@@ -5,10 +5,10 @@ import * as officeHourService from './officeHour.service.js';
 export const getOfficeHourList = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const email = req.query.email as string;
-        const isTeacher = req.query.isTeacher as string | undefined
+        const isTeacher = req.query.isTeacher as string | undefined;
 
-        const officeHourList = await officeHourService.getAllOfficeHourByEmail(email, isTeacher)
-        
+        const officeHourList = await officeHourService.getAllOfficeHourByEmail(email, isTeacher);
+
         res.status(status.OK).json(officeHourList);
     } catch (error) {
         next(error);
@@ -65,6 +65,15 @@ export const editOfficeHour = async (req: Request, res: Response, next: NextFunc
     try {
         const uploadResult = await officeHourService.editOfficeHour(req.body);
         res.status(status.OK).json(uploadResult);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteOfficeHour = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const deleteResult = await officeHourService.deleteOfficeHour(req.body);
+        res.status(status.OK).json(deleteResult);
     } catch (error) {
         next(error);
     }

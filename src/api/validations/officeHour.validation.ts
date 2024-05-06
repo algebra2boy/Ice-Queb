@@ -26,3 +26,13 @@ export const officeHourUploadSchema = z.object({
         courseNumber: schemaLibrary.courseNumberValidation,
     }),
 });
+
+export const officeHourDeleteSchema = z.object({
+    body: z.object({
+        facultyEmail: schemaLibrary.emailValidation,
+        startDate: schemaLibrary.dateValidation,
+        endDate: schemaLibrary.dateValidation,
+        courseDepartment: schemaLibrary.courseDepartmentValidation,
+        courseNumber: schemaLibrary.courseNumberValidation,
+    }),
+});
