@@ -173,7 +173,7 @@ async function editOfficeHour(payload: OfficeHour) {
     if (!officeHourDocument) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id, ...officeHour } = payload;
-        await uploadOfficeHour(officeHour);
+        return await uploadOfficeHour(officeHour);
     } else {
         await officeHourCollection.updateOne(
             { id: officeHourDocument.id },
@@ -200,11 +200,7 @@ async function deleteOfficeHour(payload: OfficeHour) {
         endDate: payload.endDate,
     };
 
-    console.log(officeHourToDelete);
-
     const officeHourDocuments = await officeHourCollection.find(officeHourToDelete).toArray();
-
-    console.log(officeHourDocuments);
 
     if (!officeHourDocuments) {
         throw new HttpError(status.BAD_REQUEST, error.OFFICE_HOUR_NOT_FOUND);
