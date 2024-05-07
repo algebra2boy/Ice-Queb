@@ -1,0 +1,28 @@
+name: Jest Runner
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies with npm
+        run: npm ci
+      
+      - name: Run Jest
+        env: # Set environment variables here using GitHub Secrets
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ secrets.PORT }}
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: npm run test
